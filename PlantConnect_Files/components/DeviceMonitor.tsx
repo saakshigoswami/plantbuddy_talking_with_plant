@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { LineChart, Line, ResponsiveContainer, YAxis, XAxis, Tooltip, ReferenceLine } from 'recharts';
-import { Mic, Play, Pause, Save, Activity, Wifi, WifiOff, Leaf, Volume2, MicOff, Send, Terminal, Cpu, Settings, Usb, ToggleLeft, ToggleRight, AlertCircle, VolumeX, Music, MessageCircle, Sliders, Info, TrendingUp } from 'lucide-react';
+import { Mic, Play, Pause, Save, Activity, Wifi, WifiOff, Leaf, Volume2, MicOff, Send, Terminal, Cpu, Settings, Usb, ToggleLeft, ToggleRight, AlertCircle, VolumeX, Music, MessageCircle, Sliders, Info } from 'lucide-react';
 import { generatePlantResponse } from '../services/geminiService';
 import { PlantDataPoint, ChatMessage } from '../types';
 import { confluentService, PlantSensorEvent } from '../services/confluentService';
@@ -374,119 +374,6 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
     };
   }, [isStreaming]);
 
-  // Price Alerts Effect - Fetch and speak market updates periodically
-  useEffect(() => {
-    // If disabled, stop everything immediately
-    if (!priceAlertsEnabled) {
-      // Clear interval if it exists
-      if (priceAlertsIntervalRef.current) {
-        clearInterval(priceAlertsIntervalRef.current);
-        priceAlertsIntervalRef.current = null;
-      }
-      // Cancel any ongoing speech
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      // Reset fetching state
-      setIsFetchingMarketUpdate(false);
-      return;
-    }
-
-    // Fetch immediately when enabled
-    const fetchAndSpeakUpdate = async () => {
-      // Check if still enabled before proceeding
-      if (!priceAlertsEnabled) return;
-      
-      if (isFetchingMarketUpdate) return; // Prevent concurrent requests
-      setIsFetchingMarketUpdate(true);
-      
-      try {
-        console.log("Fetching Aptos market update...");
-        const marketUpdate = await getAptosMarketUpdate();
-        
-        // Check again if still enabled after fetch
-        if (!priceAlertsEnabled) {
-          setIsFetchingMarketUpdate(false);
-          return;
-        }
-        
-        if (marketUpdate && !marketUpdate.includes("API Key") && !marketUpdate.includes("unable") && !marketUpdate.includes("temporarily unavailable")) {
-          // Speak the update (works in both TALK and MUSIC modes for alerts)
-          if ('speechSynthesis' in window && priceAlertsEnabled) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(marketUpdate);
-            utterance.pitch = 1.0;
-            utterance.rate = 0.9; // Slightly slower for market updates
-            utterance.volume = 1.0;
-            
-            if (selectedVoiceURI) {
-              const voice = voices.find(v => v.voiceURI === selectedVoiceURI);
-              if (voice) utterance.voice = voice;
-            }
-            
-            utterance.onstart = () => {
-              if (priceAlertsEnabled) setIsSpeaking(true);
-            };
-            utterance.onend = () => setIsSpeaking(false);
-            utterance.onerror = () => setIsSpeaking(false);
-            
-            // Add a prefix to make it clear it's a market update
-            const prefixedUpdate = `Aptos market update. ${marketUpdate}`;
-            utterance.text = prefixedUpdate;
-            
-            // Only speak if still enabled
-            if (priceAlertsEnabled) {
-              window.speechSynthesis.speak(utterance);
-              
-              // Also add to messages if in TALK mode
-              if (interactionMode === 'TALK') {
-                setMessages(prev => [...prev, {
-                  role: 'model',
-                  text: `📊 Aptos Market Update: ${marketUpdate}`
-                }]);
-              }
-            }
-          }
-        } else {
-          console.warn("Market update failed or returned error:", marketUpdate);
-        }
-      } catch (error) {
-        console.error("Error fetching market update:", error);
-      } finally {
-        setIsFetchingMarketUpdate(false);
-      }
-    };
-
-    // Fetch immediately
-    fetchAndSpeakUpdate();
-
-    // Then fetch every 5 minutes (300000 ms)
-    priceAlertsIntervalRef.current = setInterval(() => {
-      // Check if still enabled before fetching
-      if (priceAlertsEnabled) {
-        fetchAndSpeakUpdate();
-      } else {
-        // Clear interval if disabled
-        if (priceAlertsIntervalRef.current) {
-          clearInterval(priceAlertsIntervalRef.current);
-          priceAlertsIntervalRef.current = null;
-        }
-      }
-    }, 300000); // 5 minutes
-
-    // Cleanup on unmount or when disabled
-    return () => {
-      if (priceAlertsIntervalRef.current) {
-        clearInterval(priceAlertsIntervalRef.current);
-        priceAlertsIntervalRef.current = null;
-      }
-      // Cancel any ongoing speech when cleaning up
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, [priceAlertsEnabled, voices, selectedVoiceURI, interactionMode]);
-  
   // Serial Monitor State
   const [rawSerialBuffer, setRawSerialBuffer] = useState<string[]>([]);
   const [rxActive, setRxActive] = useState(false);
@@ -1237,23 +1124,6 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                 </button>
               </div>
            </div>
-
-           {/* Price Alerts Status (when enabled) */}
-           {priceAlertsEnabled && (
-             <div className="mb-3 p-2.5 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-2">
-               <TrendingUp className={`w-3.5 h-3.5 text-green-400 mt-0.5 flex-shrink-0 ${isFetchingMarketUpdate ? 'animate-pulse' : ''}`} />
-               <div className="flex-1">
-                 <span className="text-xs font-mono font-bold text-green-400 block mb-0.5">
-                   {isFetchingMarketUpdate ? 'Fetching market update...' : 'Listening to Aptos Price Alerts'}
-                 </span>
-                 <span className="text-[10px] font-mono text-green-400/70">
-                   {isFetchingMarketUpdate 
-                     ? 'Getting latest APT price data...' 
-                     : 'Updates every 5 minutes. Next update will be spoken automatically.'}
-                 </span>
-               </div>
-             </div>
-           )}
            
            {/* Toggle Switch */}
            <div className="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
