@@ -1182,12 +1182,12 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
             <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
           )}
           
-          {/* Touch hint when no device connected - Show in both modes */}
+          {/* Plant Image - Always visible when no device connected */}
           {!isConnected && (
-            <div className="absolute top-4 left-0 right-0 flex flex-col items-center text-slate-500 opacity-90 pointer-events-none z-10 px-4">
+            <div className="flex justify-center items-center py-8">
               <div className="flex flex-col items-center gap-3">
                 {/* Plant Image */}
-                <div className="flex items-center gap-0">
+                <div className="flex items-center gap-0 relative">
                   <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`}>
                     <img 
                       key={`plant-${interactionMode}`}
@@ -1197,10 +1197,15 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                       onError={(e) => {
                         // Try fallback image if PNG doesn't load
                         const target = e.target as HTMLImageElement;
+                        console.log('PNG failed, trying JPG...', target.src);
                         if (target.src.includes('.png')) {
                           target.src = '/assets/touch-plant.jpg';
+                        } else if (target.src.includes('.jpg')) {
+                          // Try the other JPG
+                          target.src = '/assets/hero-plant.jpg';
                         } else {
-                          // If both fail, show a plant emoji instead
+                          // If all fail, show a plant emoji instead
+                          console.log('All images failed, showing emoji fallback');
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent && !parent.querySelector('.plant-emoji-fallback')) {
@@ -1216,27 +1221,35 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                         console.log('Plant image loaded successfully');
                         const target = e.target as HTMLImageElement;
                         target.style.opacity = '1';
+                        target.style.visibility = 'visible';
                       }}
-                      style={{ opacity: 0, transition: 'opacity 0.3s' }}
+                      style={{ 
+                        opacity: 1, 
+                        visibility: 'visible',
+                        display: 'block',
+                        transition: 'opacity 0.3s, transform 0.3s' 
+                      }}
                     />
                   </div>
                   {interactionMode === 'MUSIC' && <span className="text-xl opacity-80 -ml-4">🎵</span>}
                   {interactionMode === 'TALK' && <span className="text-xl opacity-80 -ml-4">💬</span>}
                 </div>
-                
-                {/* Text Below */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="bg-slate-900/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700/50 shadow-lg">
-                    <p className="text-sm font-mono text-center text-white font-semibold whitespace-nowrap">
-                      Tap on me to play demo plant piano
-                    </p>
-                  </div>
-                  <div className="bg-pink-500/20 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-pink-400/30 shadow-md">
-                    <p className="text-xs font-mono text-center text-pink-300 font-bold">
-                      Simulated touch for demo
-                    </p>
-                  </div>
-                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Text Below Plant Image */}
+          {!isConnected && (
+            <div className="flex flex-col items-center gap-2 mt-4">
+              <div className="bg-slate-900/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700/50 shadow-lg">
+                <p className="text-sm font-mono text-center text-white font-semibold whitespace-nowrap">
+                  {interactionMode === 'MUSIC' ? 'Tap on me to play demo plant piano' : 'Tap on me to talk with your plant'}
+                </p>
+              </div>
+              <div className="bg-pink-500/20 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-pink-400/30 shadow-md">
+                <p className="text-xs font-mono text-center text-pink-300 font-bold">
+                  Simulated touch for demo
+                </p>
               </div>
             </div>
           )}
