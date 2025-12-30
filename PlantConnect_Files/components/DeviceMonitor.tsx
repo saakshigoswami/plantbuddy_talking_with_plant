@@ -969,14 +969,14 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
           )}
           
           {/* Graph */}
-          <div className="h-64 w-full relative z-0 mb-4">
+          <div className="h-64 w-full relative z-0 mb-4" style={{ minHeight: '256px', minWidth: '100%' }}>
              <div className="absolute top-0 left-0 z-10 text-[10px] font-mono text-slate-500 space-y-1 bg-slate-900/80 p-2 rounded border border-slate-800 pointer-events-none">
                 <div>RAW_INT: <span className="text-sky-400">{arduinoState.interpolated.toFixed(0)}</span></div>
                 <div>THRESHOLD: <span className="text-pink-400">{soundThreshold}</span></div>
                 <div>MODE: <span className={interactionMode === 'MUSIC' ? 'text-pink-400' : 'text-sky-400'}>{interactionMode}</span></div>
              </div>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+            <ResponsiveContainer width="100%" height="100%" minHeight={256} minWidth={0}>
+              <LineChart data={chartData} width={undefined} height={undefined}>
                 <YAxis domain={['auto', 'auto']} hide />
                 <XAxis hide />
                 <Tooltip 
