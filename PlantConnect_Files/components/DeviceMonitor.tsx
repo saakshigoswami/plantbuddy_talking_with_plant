@@ -25,6 +25,7 @@ declare global {
 interface DeviceMonitorProps {
   onSaveSession: (data: PlantDataPoint[]) => void;
   onSessionDataChange?: (data: PlantDataPoint[]) => void;
+  onStreamingStateChange?: (state: { isStreaming: boolean; streamCount: number; analysisResults: any[] }) => void;
 }
 
 // Initial dummy data for the chart
