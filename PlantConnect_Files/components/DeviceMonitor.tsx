@@ -1182,11 +1182,11 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
             <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
           )}
           
-          {/* Touch hint when no device connected - Only show in MUSIC mode */}
-          {!isConnected && interactionMode === 'MUSIC' && (
+          {/* Touch hint when no device connected - Show in both modes */}
+          {!isConnected && (
             <div className="absolute top-4 left-0 right-0 flex flex-col items-center text-slate-500 opacity-90 pointer-events-none z-10 px-4">
               <div className="flex flex-col items-center gap-3">
-                {/* Plant and Music Emoji Row */}
+                {/* Plant Image */}
                 <div className="flex items-center gap-0">
                   <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`}>
                     <img 
@@ -1195,16 +1195,33 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                       alt="Touch Plant" 
                       className={`w-48 h-48 object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
                       onError={(e) => {
-                        // Fallback to icon if image doesn't load
-                        (e.target as HTMLImageElement).style.display = 'none';
+                        // Try fallback image if PNG doesn't load
+                        const target = e.target as HTMLImageElement;
+                        if (target.src.includes('.png')) {
+                          target.src = '/assets/touch-plant.jpg';
+                        } else {
+                          // If both fail, show a plant emoji instead
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent && !parent.querySelector('.plant-emoji-fallback')) {
+                            const fallback = document.createElement('div');
+                            fallback.className = 'plant-emoji-fallback text-6xl';
+                            fallback.textContent = '🌱';
+                            parent.appendChild(fallback);
+                          }
+                        }
                       }}
-                      onLoad={() => {
+                      onLoad={(e) => {
                         // Ensure image is visible when loaded
                         console.log('Plant image loaded successfully');
+                        const target = e.target as HTMLImageElement;
+                        target.style.opacity = '1';
                       }}
+                      style={{ opacity: 0, transition: 'opacity 0.3s' }}
                     />
                   </div>
-                  <span className="text-xl opacity-80 -ml-4">🎵</span>
+                  {interactionMode === 'MUSIC' && <span className="text-xl opacity-80 -ml-4">🎵</span>}
+                  {interactionMode === 'TALK' && <span className="text-xl opacity-80 -ml-4">💬</span>}
                 </div>
                 
                 {/* Text Below */}
