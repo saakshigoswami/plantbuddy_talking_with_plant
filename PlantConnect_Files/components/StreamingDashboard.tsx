@@ -55,6 +55,75 @@ const StreamingDashboard: React.FC<StreamingDashboardProps> = ({
 
   return (
     <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-md shadow-xl">
+      {/* Sensor Parameters Grid - Above Header */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Gauge className="w-5 h-5 text-blue-400" />
+          <h3 className="text-sm font-mono font-bold text-white">Sensor Parameters</h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {/* Light Intensity */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Sun className="w-6 h-6 text-yellow-400" />
+              <span className="text-xs font-mono text-slate-500">Light</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 2000 + 500).toFixed(0) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">Lux</div>
+          </div>
+
+          {/* Air Humidity */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Droplets className="w-6 h-6 text-blue-400" />
+              <span className="text-xs font-mono text-slate-500">Humidity</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 30 + 50).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">%</div>
+          </div>
+
+          {/* Water Level */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Droplets className="w-6 h-6 text-cyan-400" />
+              <span className="text-xs font-mono text-slate-500">Water</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 20 + 60).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">%</div>
+          </div>
+
+          {/* Soil pH */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Gauge className="w-6 h-6 text-green-400" />
+              <span className="text-xs font-mono text-slate-500">Soil pH</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 2 + 6).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">pH</div>
+          </div>
+
+          {/* Temperature */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Thermometer className="w-6 h-6 text-red-400" />
+              <span className="text-xs font-mono text-slate-500">Temp</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 10 + 20).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">°C</div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
@@ -145,74 +214,6 @@ const StreamingDashboard: React.FC<StreamingDashboardProps> = ({
         </div>
       </div>
 
-      {/* Sensor Parameters Grid */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Gauge className="w-4 h-4 text-blue-400" />
-          <h3 className="text-sm font-mono font-bold text-white">Sensor Parameters</h3>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {/* Light Intensity */}
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Sun className="w-4 h-4 text-yellow-400" />
-              <span className="text-xs font-mono text-slate-500">Light</span>
-            </div>
-            <div className="text-xl font-mono font-bold text-white">
-              {latestAnalysis ? (Math.random() * 2000 + 500).toFixed(0) : '--'}
-            </div>
-            <div className="text-xs text-slate-400 font-mono mt-1">Lux</div>
-          </div>
-
-          {/* Air Humidity */}
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Droplets className="w-4 h-4 text-blue-400" />
-              <span className="text-xs font-mono text-slate-500">Humidity</span>
-            </div>
-            <div className="text-xl font-mono font-bold text-white">
-              {latestAnalysis ? (Math.random() * 30 + 50).toFixed(1) : '--'}
-            </div>
-            <div className="text-xs text-slate-400 font-mono mt-1">%</div>
-          </div>
-
-          {/* Water Level */}
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Droplets className="w-4 h-4 text-cyan-400" />
-              <span className="text-xs font-mono text-slate-500">Water</span>
-            </div>
-            <div className="text-xl font-mono font-bold text-white">
-              {latestAnalysis ? (Math.random() * 20 + 60).toFixed(1) : '--'}
-            </div>
-            <div className="text-xs text-slate-400 font-mono mt-1">%</div>
-          </div>
-
-          {/* Soil pH */}
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Gauge className="w-4 h-4 text-green-400" />
-              <span className="text-xs font-mono text-slate-500">Soil pH</span>
-            </div>
-            <div className="text-xl font-mono font-bold text-white">
-              {latestAnalysis ? (Math.random() * 2 + 6).toFixed(1) : '--'}
-            </div>
-            <div className="text-xs text-slate-400 font-mono mt-1">pH</div>
-          </div>
-
-          {/* Temperature */}
-          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Thermometer className="w-4 h-4 text-red-400" />
-              <span className="text-xs font-mono text-slate-500">Temp</span>
-            </div>
-            <div className="text-xl font-mono font-bold text-white">
-              {latestAnalysis ? (Math.random() * 10 + 20).toFixed(1) : '--'}
-            </div>
-            <div className="text-xs text-slate-400 font-mono mt-1">°C</div>
-          </div>
-        </div>
-      </div>
 
       {/* Health Score Chart */}
       {healthHistory.length > 0 && (
