@@ -1167,10 +1167,70 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
               </div>
            )}
 
+           {/* Plant Image - Inside Plant Interface Box, Top Middle */}
+           <div 
+             className="flex flex-col items-center justify-center py-4 px-4 flex-shrink-0 border-t border-slate-800 mt-3"
+             onClick={handleSimulatedTouch}
+             onTouchStart={handleSimulatedTouch}
+             style={{ cursor: 'pointer' }}
+           >
+             {/* Speech Bubble */}
+             <div className="relative mb-2">
+               <div className="bg-slate-800 border border-pink-400/30 rounded-2xl px-4 py-2 shadow-lg">
+                 <p className="text-sm text-slate-200 font-mono">I'm happy you're here.</p>
+               </div>
+               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
+                 <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-slate-800"></div>
+               </div>
+             </div>
+             
+             {/* Plant Image */}
+             <div className={`relative transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+               <img 
+                 key={`plant-${interactionMode}`}
+                 src="/assets/touch-plant.png" 
+                 alt="Touch Plant" 
+                 className={`object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
+                 onError={(e) => {
+                   const target = e.target as HTMLImageElement;
+                   if (target.src.includes('.png')) {
+                     target.src = '/assets/touch-plant.jpg';
+                   } else if (target.src.includes('.jpg')) {
+                     target.src = '/assets/hero-plant.jpg';
+                   }
+                 }}
+                 style={{ 
+                   width: '150px',
+                   height: '150px',
+                   objectFit: 'contain'
+                 }}
+               />
+               {/* Music Note Icon */}
+               {interactionMode === 'MUSIC' && (
+                 <Music className="w-5 h-5 text-pink-400 absolute top-0 right-0" />
+               )}
+             </div>
+             
+             {/* Demo Button */}
+             <button className="mt-3 bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700/50 shadow-lg hover:bg-slate-700/90 transition-colors w-full">
+               <p className="text-xs font-mono text-center text-white font-semibold">
+                 {interactionMode === 'MUSIC' ? 'Tap on me to play demo plant piano' : 'Tap on me to talk with your plant'}
+               </p>
+             </button>
+             
+             {/* Simulated Touch Button */}
+             <button 
+               onClick={handleSimulatedTouch}
+               className="mt-2 bg-pink-500/10 text-pink-400 border border-pink-500/30 px-3 py-1.5 rounded-lg text-xs font-mono hover:bg-pink-500/20 transition-colors"
+             >
+               Simulated touch for demo
+             </button>
+           </div>
+
            {/* Messages Area - Inside Plant Interface Box, Only in TALK Mode */}
            {interactionMode === 'TALK' && (
              <div 
-               className="mt-3 px-4 overflow-y-auto space-y-4 scroll-smooth border-t border-slate-800"
+               className="mt-3 px-4 overflow-y-auto space-y-4 scroll-smooth border-t border-slate-800 flex-1"
                style={{ maxHeight: '200px', minHeight: '100px' }}
              >
                {messages.length === 0 && isConnected && (
@@ -1195,9 +1255,9 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
              </div>
            )}
 
-           {/* Input Area - Inside Plant Interface Box, Only in TALK Mode */}
+           {/* Input Area - At Bottom of Plant Interface Box, Only in TALK Mode */}
            {interactionMode === 'TALK' && (
-             <div className="mt-3 px-4 pb-4 border-t border-slate-800">
+             <div className="px-4 pb-4 border-t border-slate-800 mt-auto">
                <div className="flex gap-2 pt-3">
                  <input
                    type="text"
@@ -1227,66 +1287,6 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                </div>
              </div>
            )}
-        </div>
-
-        {/* Plant Image - Centered, Always Visible, Same Position for Both Modes */}
-        <div 
-          className="flex flex-col items-center justify-center py-6 px-4 flex-shrink-0"
-          onClick={handleSimulatedTouch}
-          onTouchStart={handleSimulatedTouch}
-          style={{ cursor: 'pointer' }}
-        >
-          {/* Speech Bubble */}
-          <div className="relative mb-2">
-            <div className="bg-slate-800 border border-pink-400/30 rounded-2xl px-4 py-2 shadow-lg">
-              <p className="text-sm text-slate-200 font-mono">I'm happy you're here.</p>
-            </div>
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-              <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-slate-800"></div>
-            </div>
-          </div>
-          
-          {/* Plant Image */}
-          <div className={`relative transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img 
-              key={`plant-${interactionMode}`}
-              src="/assets/touch-plant.png" 
-              alt="Touch Plant" 
-              className={`object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (target.src.includes('.png')) {
-                  target.src = '/assets/touch-plant.jpg';
-                } else if (target.src.includes('.jpg')) {
-                  target.src = '/assets/hero-plant.jpg';
-                }
-              }}
-              style={{ 
-                width: '150px',
-                height: '150px',
-                objectFit: 'contain'
-              }}
-            />
-            {/* Music Note Icon */}
-            {interactionMode === 'MUSIC' && (
-              <Music className="w-5 h-5 text-pink-400 absolute top-0 right-0" />
-            )}
-          </div>
-          
-          {/* Demo Button */}
-          <button className="mt-3 bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700/50 shadow-lg hover:bg-slate-700/90 transition-colors w-full">
-            <p className="text-xs font-mono text-center text-white font-semibold">
-              {interactionMode === 'MUSIC' ? 'Tap on me to play demo plant piano' : 'Tap on me to talk with your plant'}
-            </p>
-          </button>
-          
-          {/* Simulated Touch Button */}
-          <button 
-            onClick={handleSimulatedTouch}
-            className="mt-2 bg-pink-500/10 text-pink-400 border border-pink-500/30 px-3 py-1.5 rounded-lg text-xs font-mono hover:bg-pink-500/20 transition-colors"
-          >
-            Simulated touch for demo
-          </button>
         </div>
 
 
