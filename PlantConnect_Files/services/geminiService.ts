@@ -4,6 +4,19 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Helper to get the best available API Key
 const getApiKey = (): string | undefined => {
+  // Debug: Log all environment variables that start with VITE_ (for troubleshooting)
+  if (typeof window !== 'undefined') {
+    const allEnvKeys = Object.keys(import.meta.env).filter(key => key.includes('GEMINI') || key.includes('API'));
+    console.log("🔍 Available env vars with GEMINI/API:", allEnvKeys);
+    console.log("🔍 VITE_GEMINI_API_KEY exists?", !!import.meta.env.VITE_GEMINI_API_KEY);
+    console.log("🔍 VITE_GEMINI_API_KEY value type:", typeof import.meta.env.VITE_GEMINI_API_KEY);
+    if (import.meta.env.VITE_GEMINI_API_KEY) {
+      const keyValue = String(import.meta.env.VITE_GEMINI_API_KEY);
+      console.log("🔍 VITE_GEMINI_API_KEY length:", keyValue.length);
+      console.log("🔍 VITE_GEMINI_API_KEY starts with AIza?", keyValue.startsWith('AIza'));
+    }
+  }
+  
   // 1. Check Local Storage (User override)
   const localKey = localStorage.getItem('GEMINI_API_KEY');
   if (localKey && localKey.trim().length > 0) {
@@ -14,10 +27,11 @@ const getApiKey = (): string | undefined => {
   // 2. Check Environment Variable (Vite uses import.meta.env)
   // IMPORTANT: In Vercel, the variable MUST be named VITE_GEMINI_API_KEY
   const envKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
-  if (envKey && envKey !== 'undefined' && envKey.trim().length > 0) {
+  if (envKey && envKey !== 'undefined' && String(envKey).trim().length > 0) {
+    const trimmedKey = String(envKey).trim();
     console.log("🔑 Using API key from environment variable (VITE_GEMINI_API_KEY)");
-    console.log("🔑 Key length:", envKey.length, "First 10 chars:", envKey.substring(0, 10) + "...");
-    return envKey.trim();
+    console.log("🔑 Key length:", trimmedKey.length, "First 10 chars:", trimmedKey.substring(0, 10) + "...");
+    return trimmedKey;
   }
   
   // 3. Default API Key (fallback - may be expired/invalid)
