@@ -156,10 +156,21 @@ export const generatePlantResponse = async (
         if (listResponse.ok) {
           const listData = await listResponse.json();
           availableModels = (listData.models || []).map((m: any) => m.name?.replace('models/', '') || m.name).filter(Boolean);
-          console.log("Available models:", availableModels);
+          console.log("✅ Available models:", availableModels);
+        } else {
+          const errorData = await listResponse.json().catch(() => ({}));
+          console.error("❌ Failed to list models. Status:", listResponse.status, "Error:", errorData);
+          // If API key is invalid, throw early
+          if (listResponse.status === 401 || listResponse.status === 403) {
+            throw new Error(`API Key validation failed (${listResponse.status}). Please check your VITE_GEMINI_API_KEY in Vercel.`);
+          }
         }
-      } catch (e) {
-        console.log("Could not list models, will try defaults");
+      } catch (e: any) {
+        console.warn("⚠️ Could not list models:", e.message);
+        // If it's an API key error, throw it
+        if (e.message?.includes('API Key') || e.message?.includes('401') || e.message?.includes('403')) {
+          throw e;
+        }
       }
       
       // Try different models - prioritize ones that support generateContent
@@ -192,13 +203,21 @@ export const generatePlantResponse = async (
           }
         } catch (sdkError: any) {
           lastError = sdkError;
-          const errorMsg = sdkError.message || '';
+          const errorMsg = sdkError.message || sdkError.toString() || '';
+          const errorStr = errorMsg.toLowerCase();
+          
+          // Check for API key errors early
+          if (errorStr.includes('api key') || errorStr.includes('invalid') || errorStr.includes('401') || errorStr.includes('403') || errorStr.includes('unauthorized')) {
+            console.error(`❌ API Key Error with ${modelName}:`, errorMsg);
+            throw new Error(`Invalid API Key. Please check your VITE_GEMINI_API_KEY in Vercel environment variables. Error: ${errorMsg}`);
+          }
+          
           // Skip if model doesn't support generateContent
           if (errorMsg.includes('not supported for generateContent')) {
             console.log(`${modelName} doesn't support generateContent, skipping`);
             continue;
           }
-          console.log(`${modelName} failed:`, errorMsg.slice(0, 100));
+          console.log(`⚠️ ${modelName} failed:`, errorMsg.slice(0, 100));
           continue; // Try next model
         }
       }
