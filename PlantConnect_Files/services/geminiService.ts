@@ -7,26 +7,28 @@ const getApiKey = (): string | undefined => {
   // 1. Check Local Storage (User override)
   const localKey = localStorage.getItem('GEMINI_API_KEY');
   if (localKey && localKey.trim().length > 0) {
-    console.log("Using API key from localStorage");
+    console.log("🔑 Using API key from localStorage");
     return localKey.trim();
   }
   
   // 2. Check Environment Variable (Vite uses import.meta.env)
+  // IMPORTANT: In Vercel, the variable MUST be named VITE_GEMINI_API_KEY
   const envKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
   if (envKey && envKey !== 'undefined' && envKey.trim().length > 0) {
-    console.log("Using API key from environment variable");
+    console.log("🔑 Using API key from environment variable (VITE_GEMINI_API_KEY)");
+    console.log("🔑 Key length:", envKey.length, "First 10 chars:", envKey.substring(0, 10) + "...");
     return envKey.trim();
   }
   
-  // 3. Default API Key (fallback)
+  // 3. Default API Key (fallback - may be expired/invalid)
   const defaultKey = 'AIzaSyA99K-oR4Nx2ebAuqoNs-xcBs8Rhv0Dhq4';
   if (defaultKey && defaultKey.trim().length > 0) {
-    console.log("Using default API key");
+    console.warn("⚠️ Using default API key (may be invalid). Please set VITE_GEMINI_API_KEY in Vercel.");
     return defaultKey.trim();
   }
   
   // 4. No fallback - return undefined if no key is found
-  console.warn("No API key found!");
+  console.error("❌ No API key found! Please set VITE_GEMINI_API_KEY in Vercel environment variables.");
   return undefined;
 };
 
