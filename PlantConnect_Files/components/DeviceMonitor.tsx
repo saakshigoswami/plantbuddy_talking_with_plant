@@ -1190,14 +1190,13 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                 minHeight: '200px',
                 position: 'relative',
                 overflow: 'visible',
-                width: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.1)' // Temporary: to see if container is visible
+                width: '100%'
               }}
             >
               <div className="flex flex-col items-center gap-3 w-full">
                 {/* Plant Image */}
                 <div className="flex items-center justify-center gap-0 relative z-20 w-full" style={{ minHeight: '192px' }}>
-                  <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid rgba(255, 192, 203, 0.3)' }}>
+                  <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img 
                       key={`plant-${interactionMode}`}
                       src="/assets/touch-plant.png" 
