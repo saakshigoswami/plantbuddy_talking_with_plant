@@ -120,49 +120,48 @@ const App: React.FC = () => {
               </span>
             </button>
 
-            {/* Home Button */}
-            <button
-              onClick={() => setView(ViewMode.HOME)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                view === ViewMode.HOME
-                  ? 'bg-brand-blue text-brand-pink shadow-lg'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-              title="Home"
-            >
-              <Home className="w-4 h-4" />
-            </button>
+            {/* Toggle Buttons - Centered in Nav Bar */}
+            <div className="flex items-center gap-1 bg-slate-800/50 p-1 rounded-lg border border-white/5">
+              <button
+                onClick={() => setView(ViewMode.HOME)}
+                className={`px-2 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1 ${
+                  view === ViewMode.HOME
+                    ? 'bg-brand-blue text-brand-pink shadow-lg'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Home"
+              >
+                <Home className="w-3 h-3" />
+              </button>
+              <button
+                onClick={() => setView(ViewMode.DEVICE)}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                  view === ViewMode.DEVICE
+                    ? 'bg-brand-blue text-brand-pink shadow-lg'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Activity className="w-4 h-4" />
+                <span>Device</span>
+              </button>
+              <button
+                onClick={() => setView(ViewMode.STREAMING)}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                  view === ViewMode.STREAMING
+                    ? 'bg-brand-blue text-brand-pink shadow-lg'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Activity className="w-4 h-4" />
+                <span>Streaming</span>
+              </button>
+            </div>
+
+            {/* Right Side - Empty for now */}
+            <div className="w-20"></div>
           </div>
         </div>
       </nav>
-
-      {/* Toggle Buttons - Fixed at Top Center */}
-      <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-30">
-        <div className="flex items-center gap-1 bg-slate-800/50 p-1 rounded-lg border border-white/5">
-          <button
-            onClick={() => setView(ViewMode.DEVICE)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-              view === ViewMode.DEVICE
-                ? 'bg-brand-blue text-brand-pink shadow-lg'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Activity className="w-4 h-4" />
-            <span>Device</span>
-          </button>
-          <button
-            onClick={() => setView(ViewMode.STREAMING)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-              view === ViewMode.STREAMING
-                ? 'bg-brand-blue text-brand-pink shadow-lg'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Activity className="w-4 h-4" />
-            <span>Streaming</span>
-          </button>
-        </div>
-      </div>
 
       {/* Main Content */}
       <main className="pt-24 px-4 max-w-7xl mx-auto min-h-screen">
