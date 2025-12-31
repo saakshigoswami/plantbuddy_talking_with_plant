@@ -1102,7 +1102,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
       </div>
 
       {/* RIGHT: Chat / Interaction Interface */}
-      <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col overflow-hidden shadow-2xl h-[600px] lg:h-auto relative">
+      <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col overflow-visible shadow-2xl h-[600px] lg:h-auto relative">
         
         {/* Mode Switch Header */}
         <div className="p-4 border-b border-slate-800 bg-slate-950/50 z-10">
