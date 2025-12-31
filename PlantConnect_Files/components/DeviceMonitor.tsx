@@ -572,17 +572,45 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
       if (type === 'SYSTEM') prompt = `[SYSTEM EVENT: ${text}]`;
       if (type === 'TOUCH') prompt = `[SENSORY INPUT: User touched the plant. Sensor Deviation: ${currentValue}]`;
 
-      // Use health-aware companion response if we have health data
+      // Always use Vertex AI for talk mode (with personality)
+      // Vertex AI provides the plant's personality and conversational abilities
       let responseText: string;
-      if (currentHealthInsight && type === 'USER') {
-        // Use Vertex AI companion mode with health context (human-like personality)
+      
+      // Create default health insight if we don't have one (for Vertex AI context)
+      // This ensures Vertex AI always has context about the plant's state
+      const healthInsightForAI = currentHealthInsight || {
+        device_id: 'plantbuddy-001',
+        timestamp: Date.now(),
+        health_score: 75,
+        stress_category: 'HEALTHY' as const,
+        anomaly_detected: false,
+        summary: 'I\'m doing well! How are you?',
+        recommendations: ['Continue current care routine'],
+        inputs_window: {
+          duration_sec: 0,
+          events_count: 0,
+          avg_moisture_pct: 50,
+          avg_temperature_c: 22,
+          avg_light_lux: 10000,
+          avg_humidity_pct: 60
+        },
+        metrics: {
+          moisture_status: 'OPTIMAL' as const,
+          temperature_status: 'OPTIMAL' as const,
+          light_status: 'OPTIMAL' as const,
+          humidity_status: 'OPTIMAL' as const
+        }
+      };
+      
+      // Use Vertex AI companion mode for all talk mode interactions
+      if (interactionMode === 'TALK') {
         responseText = await vertexAIService.generateCompanionResponse(
           prompt,
-          currentHealthInsight,
+          healthInsightForAI,
           historyForService
         );
       } else {
-        // Fallback to regular plant response (still with enhanced personality)
+        // Fallback for other modes (shouldn't happen in TALK mode, but just in case)
         responseText = await generatePlantResponse(prompt, normalizedIntensity, historyForService);
       }
       

@@ -144,7 +144,7 @@ Respond in JSON format:
   }
 
   /**
-   * Call Gemini API for analysis
+   * Call Gemini API for analysis (returns JSON)
    */
   private async callGeminiAPI(prompt: string): Promise<any> {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
@@ -186,6 +186,48 @@ Respond in JSON format:
       }
       throw new Error('Failed to parse AI response');
     }
+  }
+
+  /**
+   * Call Gemini API for conversational responses (returns text, not JSON)
+   * This is used for Vertex AI personality in talk mode
+   */
+  private async callGeminiAPIForConversation(prompt: string): Promise<string> {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.8, // Slightly higher for more personality
+          maxOutputTokens: 200, // Limit to 2-4 sentences
+          topP: 0.95,
+          topK: 40
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Gemini API error: ${response.statusText} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+      throw new Error('Invalid response format from Gemini API');
+    }
+    
+    const text = data.candidates[0].content.parts[0].text;
+    return text || "I'm here and listening! How are you doing today?";
   }
 
   /**
@@ -393,13 +435,24 @@ Response (2-4 sentences, be conversational and genuine):
     `;
 
     try {
-      const response = await this.callGeminiAPI(prompt);
+      // Call Gemini API for conversational response (not JSON)
+      const response = await this.callGeminiAPIForConversation(prompt);
       let responseText = typeof response === 'string' ? response.trim() : 
                         (response.text?.trim() || response.response?.trim() || 
                          "I'm here and listening! How are you doing today?");
       
       // Clean up any markdown or formatting
       responseText = responseText.replace(/```/g, '').replace(/\*\*/g, '').trim();
+      
+      // Remove any JSON wrapper if present
+      if (responseText.startsWith('{') && responseText.includes('"text"')) {
+        try {
+          const parsed = JSON.parse(responseText);
+          responseText = parsed.text || parsed.response || responseText;
+        } catch (e) {
+          // Not JSON, keep as is
+        }
+      }
       
       return responseText;
     } catch (error) {
