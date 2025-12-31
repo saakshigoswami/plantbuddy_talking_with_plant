@@ -97,11 +97,17 @@ export const generatePlantResponse = async (
     try {
       const apiKey = getApiKey();
       if (!apiKey) {
-        return "(System: API Key missing. Please click the Lock icon in the top-right to enter your Google Gemini API Key.)";
+        return "(System: API Key missing. Please set VITE_GEMINI_API_KEY in Vercel environment variables and redeploy.)";
+      }
+
+      // Validate API key format (should start with AIza)
+      if (!apiKey.startsWith('AIza')) {
+        console.error("❌ Invalid API key format. Gemini API keys should start with 'AIza'");
+        return "(System: Invalid API key format. Gemini API keys should start with 'AIza'. Please check your VITE_GEMINI_API_KEY in Vercel.)";
       }
 
       // Log API key (first 10 chars only for security)
-      console.log("Using API Key:", apiKey.substring(0, 10) + "...");
+      console.log("🔑 Using API Key:", apiKey.substring(0, 10) + "...", "Length:", apiKey.length);
       
       const genAI = new GoogleGenerativeAI(apiKey);
       
