@@ -1189,18 +1189,19 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
               style={{ 
                 minHeight: '200px',
                 position: 'relative',
-                overflow: 'visible'
+                overflow: 'visible',
+                width: '100%'
               }}
             >
               <div className="flex flex-col items-center gap-3 w-full">
                 {/* Plant Image */}
                 <div className="flex items-center justify-center gap-0 relative z-20 w-full">
-                  <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`}>
+                  <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img 
                       key={`plant-${interactionMode}`}
                       src="/assets/touch-plant.png" 
                       alt="Touch Plant" 
-                      className={`w-48 h-48 object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
+                      className={`object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
                       onError={(e) => {
                         // Try fallback image if PNG doesn't load
                         const target = e.target as HTMLImageElement;
@@ -1251,8 +1252,9 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                         zIndex: 20,
                         transition: 'opacity 0.3s, transform 0.3s',
                         backgroundColor: 'transparent',
-                        maxWidth: '100%',
-                        height: 'auto'
+                        width: '192px',
+                        height: '192px',
+                        objectFit: 'contain'
                       }}
                     />
                   </div>
