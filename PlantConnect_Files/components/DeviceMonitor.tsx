@@ -1091,17 +1091,15 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                   onTouchStart={handleSimulatedTouch}
                   style={{ cursor: 'pointer' }}
                 >
-                  {/* Speech Bubble */}
-                  {interactionMode === 'TALK' && (
-                    <div className="relative mb-2">
-                      <div className="bg-slate-800 border border-pink-400/30 rounded-2xl px-4 py-2 shadow-lg">
-                        <p className="text-sm text-slate-200 font-mono">I'm happy you're here.</p>
-                      </div>
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-                        <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-slate-800"></div>
-                      </div>
+                  {/* Speech Bubble - Always show */}
+                  <div className="relative mb-2">
+                    <div className="bg-slate-800 border border-pink-400/30 rounded-2xl px-4 py-2 shadow-lg">
+                      <p className="text-sm text-slate-200 font-mono">I'm happy you're here.</p>
                     </div>
-                  )}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
+                      <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-slate-800"></div>
+                    </div>
+                  </div>
                   
                   {/* Plant Image */}
                   <div className={`relative transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
