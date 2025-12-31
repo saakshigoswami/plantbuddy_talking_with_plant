@@ -17,21 +17,37 @@ const getApiKey = (): string | undefined => {
     }
   }
   
-  // 1. Check Local Storage (User override)
-  const localKey = localStorage.getItem('GEMINI_API_KEY');
-  if (localKey && localKey.trim().length > 0) {
-    console.log("🔑 Using API key from localStorage");
-    return localKey.trim();
-  }
-  
-  // 2. Check Environment Variable (Vite uses import.meta.env)
+  // PRIORITY 1: Check Environment Variable FIRST (Vercel env vars take precedence)
   // IMPORTANT: In Vercel, the variable MUST be named VITE_GEMINI_API_KEY
   const envKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY;
   if (envKey && envKey !== 'undefined' && String(envKey).trim().length > 0) {
     const trimmedKey = String(envKey).trim();
-    console.log("🔑 Using API key from environment variable (VITE_GEMINI_API_KEY)");
-    console.log("🔑 Key length:", trimmedKey.length, "First 10 chars:", trimmedKey.substring(0, 10) + "...");
-    return trimmedKey;
+    // Validate format
+    if (trimmedKey.startsWith('AIza')) {
+      console.log("🔑 Using API key from environment variable (VITE_GEMINI_API_KEY) - PRIORITY");
+      console.log("🔑 Key length:", trimmedKey.length, "First 10 chars:", trimmedKey.substring(0, 10) + "...");
+      // Clear any old localStorage key to avoid confusion
+      if (localStorage.getItem('GEMINI_API_KEY')) {
+        console.log("🧹 Clearing old localStorage key to use Vercel env var");
+        localStorage.removeItem('GEMINI_API_KEY');
+      }
+      return trimmedKey;
+    } else {
+      console.warn("⚠️ Environment variable VITE_GEMINI_API_KEY exists but has invalid format (should start with AIza)");
+    }
+  }
+  
+  // PRIORITY 2: Check Local Storage (User override - only if no env var)
+  const localKey = localStorage.getItem('GEMINI_API_KEY');
+  if (localKey && localKey.trim().length > 0) {
+    // Validate format
+    if (localKey.trim().startsWith('AIza')) {
+      console.log("🔑 Using API key from localStorage (no env var found)");
+      return localKey.trim();
+    } else {
+      console.warn("⚠️ localStorage key has invalid format, removing it");
+      localStorage.removeItem('GEMINI_API_KEY');
+    }
   }
   
   // 3. Default API Key (fallback - may be expired/invalid)
