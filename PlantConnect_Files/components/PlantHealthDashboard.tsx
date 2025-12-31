@@ -21,10 +21,10 @@ interface PlantHealthDashboardProps {
 const PlantHealthDashboard: React.FC<PlantHealthDashboardProps> = ({ healthInsight, currentReading }) => {
   if (!healthInsight && !currentReading) {
     return (
-      <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-md">
-        <div className="text-center py-12 text-slate-500">
-          <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p className="text-sm font-mono">Waiting for sensor data...</p>
+      <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4 backdrop-blur-md">
+        <div className="text-center py-4 text-slate-500">
+          <Activity className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <p className="text-xs font-mono">Waiting for sensor data...</p>
         </div>
       </div>
     );
