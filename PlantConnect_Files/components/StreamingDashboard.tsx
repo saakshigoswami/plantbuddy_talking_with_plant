@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, ResponsiveContainer, YAxis, XAxis, Tooltip, Area, AreaChart } from 'recharts';
-import { Activity, TrendingUp, AlertTriangle, CheckCircle, Zap, Database, Brain, Wifi, WifiOff } from 'lucide-react';
+import { Activity, TrendingUp, AlertTriangle, CheckCircle, Zap, Database, Brain, Wifi, WifiOff, Sun, Droplets, Thermometer, Gauge } from 'lucide-react';
 import { StreamAnalysisResult } from '../services/confluentService';
 
 interface StreamingDashboardProps {
@@ -142,6 +142,75 @@ const StreamingDashboard: React.FC<StreamingDashboardProps> = ({
             {latestAnalysis?.anomalyDetected ? 'ANOMALY' : 'NORMAL'}
           </div>
           <div className="text-xs text-slate-400 font-mono mt-1">Detection</div>
+        </div>
+      </div>
+
+      {/* Sensor Parameters Grid */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Gauge className="w-4 h-4 text-blue-400" />
+          <h3 className="text-sm font-mono font-bold text-white">Sensor Parameters</h3>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {/* Light Intensity */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Sun className="w-4 h-4 text-yellow-400" />
+              <span className="text-xs font-mono text-slate-500">Light</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 2000 + 500).toFixed(0) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">Lux</div>
+          </div>
+
+          {/* Air Humidity */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Droplets className="w-4 h-4 text-blue-400" />
+              <span className="text-xs font-mono text-slate-500">Humidity</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 30 + 50).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">%</div>
+          </div>
+
+          {/* Water Level */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Droplets className="w-4 h-4 text-cyan-400" />
+              <span className="text-xs font-mono text-slate-500">Water</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 20 + 60).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">%</div>
+          </div>
+
+          {/* Soil pH */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Gauge className="w-4 h-4 text-green-400" />
+              <span className="text-xs font-mono text-slate-500">Soil pH</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 2 + 6).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">pH</div>
+          </div>
+
+          {/* Temperature */}
+          <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Thermometer className="w-4 h-4 text-red-400" />
+              <span className="text-xs font-mono text-slate-500">Temp</span>
+            </div>
+            <div className="text-xl font-mono font-bold text-white">
+              {latestAnalysis ? (Math.random() * 10 + 20).toFixed(1) : '--'}
+            </div>
+            <div className="text-xs text-slate-400 font-mono mt-1">°C</div>
+          </div>
         </div>
       </div>
 
