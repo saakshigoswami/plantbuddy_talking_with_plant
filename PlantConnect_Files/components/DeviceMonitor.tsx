@@ -1170,7 +1170,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
 
         {/* Messages */}
         <div 
-          className={`flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative ${
+          className={`flex-1 overflow-y-auto overflow-x-visible p-4 space-y-4 scroll-smooth relative ${
             !isConnected ? 'cursor-pointer select-none' : ''
           } ${isSimulatedTouching ? 'bg-gradient-to-b from-pink-900/20 to-slate-900' : ''}`}
           onClick={!isConnected ? handleSimulatedTouch : undefined}
