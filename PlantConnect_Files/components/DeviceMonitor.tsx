@@ -567,7 +567,13 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
     }
 
     try {
-      const historyForService = messages.map(m => ({ role: m.role, text: m.text }));
+      // Include current user message in history for context
+      const currentMessage = type === 'USER' ? { role: 'user', text } : null;
+      const historyForService = [
+        ...messages.map(m => ({ role: m.role === 'user' ? 'user' : m.role === 'model' ? 'assistant' : 'user', text: m.text })),
+        ...(currentMessage ? [currentMessage] : [])
+      ];
+      
       let prompt = text;
       if (type === 'SYSTEM') prompt = `[SYSTEM EVENT: ${text}]`;
       if (type === 'TOUCH') prompt = `[SENSORY INPUT: User touched the plant. Sensor Deviation: ${currentValue}]`;
@@ -577,14 +583,26 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
       let responseText: string;
       
       // Create default health insight if we don't have one (for Vertex AI context)
-      // This ensures Vertex AI always has context about the plant's state
+      // Add variation to prevent repetition - change summary based on time and conversation length
+      const conversationCount = messages.filter(m => m.role === 'user').length;
+      const timeOfDay = new Date().getHours();
+      const timeContext = timeOfDay < 12 ? 'morning' : timeOfDay < 18 ? 'afternoon' : 'evening';
+      const defaultSummaries = [
+        `I'm doing well this ${timeContext}! How are you?`,
+        `Feeling good today! What's on your mind?`,
+        `I'm here and ready to chat! How's your day?`,
+        `Doing great! I'd love to hear from you.`,
+        `I'm feeling healthy and happy! How about you?`
+      ];
+      const defaultSummary = defaultSummaries[conversationCount % defaultSummaries.length];
+      
       const healthInsightForAI = currentHealthInsight || {
         device_id: 'plantbuddy-001',
         timestamp: Date.now(),
-        health_score: 75,
+        health_score: 75 + Math.floor(Math.random() * 10), // Add slight variation
         stress_category: 'HEALTHY' as const,
         anomaly_detected: false,
-        summary: 'I\'m doing well! How are you?',
+        summary: defaultSummary,
         recommendations: ['Continue current care routine'],
         inputs_window: {
           duration_sec: 0,
@@ -871,7 +889,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
 
   const toggleListening = () => {
     if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-      alert("Voice input not supported. Use Chrome.");
+      alert("Voice input not supported. Please use Chrome or Edge browser.");
       return;
     }
     if (isListening) {
@@ -882,18 +900,117 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!recognitionRef.current) {
         recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = false;
+        recognitionRef.current.continuous = true; // Changed to true to keep listening
         recognitionRef.current.lang = 'en-US';
-        recognitionRef.current.interimResults = false;
+        recognitionRef.current.interimResults = true; // Show interim results
         recognitionRef.current.maxAlternatives = 1;
     }
-    recognitionRef.current.onstart = () => setIsListening(true);
-    recognitionRef.current.onend = () => setIsListening(false);
-    recognitionRef.current.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      if (transcript) processInteraction(transcript, 'USER'); 
+    
+    // Set up event handlers
+    recognitionRef.current.onstart = () => {
+      console.log('🎤 Speech recognition started');
+      setIsListening(true);
     };
-    try { recognitionRef.current.start(); } catch (e) { console.error(e); }
+    
+    recognitionRef.current.onend = () => {
+      console.log('🎤 Speech recognition ended');
+      setIsListening(false);
+      // Auto-restart if still in listening mode (continuous mode)
+      if (isListening) {
+        try {
+          recognitionRef.current?.start();
+        } catch (e) {
+          console.log('Could not restart recognition:', e);
+        }
+      }
+    };
+    
+    recognitionRef.current.onresult = (event: any) => {
+      console.log('🎤 Speech recognition result:', event);
+      // Get the final transcript
+      let finalTranscript = '';
+      let interimTranscript = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+      
+      // Update input field with interim results
+      if (interimTranscript) {
+        setInputText(interimTranscript);
+      }
+      
+      // Process final transcript
+      if (finalTranscript.trim()) {
+        console.log('🎤 Final transcript:', finalTranscript);
+        setInputText(finalTranscript.trim());
+        // Process the interaction
+        processInteraction(finalTranscript.trim(), 'USER');
+        // Clear input after processing
+        setTimeout(() => setInputText(''), 100);
+      }
+    };
+    
+    recognitionRef.current.onerror = (event: any) => {
+      console.error('🎤 Speech recognition error:', event.error);
+      setIsListening(false);
+      
+      let errorMessage = 'Microphone error: ';
+      switch (event.error) {
+        case 'no-speech':
+          errorMessage = 'No speech detected. Please try again.';
+          break;
+        case 'audio-capture':
+          errorMessage = 'No microphone found. Please check your microphone.';
+          break;
+        case 'not-allowed':
+          errorMessage = 'Microphone permission denied. Please allow microphone access in your browser settings.';
+          alert(errorMessage);
+          break;
+        case 'network':
+          errorMessage = 'Network error. Please check your connection.';
+          break;
+        case 'aborted':
+          // User stopped, no need to show error
+          return;
+        default:
+          errorMessage += event.error;
+      }
+      
+      if (event.error !== 'aborted' && event.error !== 'no-speech') {
+        console.error(errorMessage);
+      }
+    };
+    
+    recognitionRef.current.onnomatch = () => {
+      console.log('🎤 No speech match found');
+    };
+    
+    try { 
+      recognitionRef.current.start();
+      console.log('🎤 Starting speech recognition...');
+    } catch (e: any) {
+      console.error('🎤 Failed to start recognition:', e);
+      if (e.message?.includes('already started')) {
+        // Recognition already running, stop and restart
+        recognitionRef.current.stop();
+        setTimeout(() => {
+          try {
+            recognitionRef.current.start();
+          } catch (e2) {
+            console.error('Failed to restart:', e2);
+          }
+        }, 100);
+      } else {
+        alert('Failed to start microphone. Please check your browser permissions and try again.');
+        setIsListening(false);
+      }
+    }
   };
 
   const toggleStreaming = () => {
