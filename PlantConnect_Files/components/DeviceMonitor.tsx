@@ -1162,7 +1162,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
         <div className="p-4 border-b border-slate-800 bg-slate-950/50 z-10">
            <div className="flex justify-between items-center mb-3">
               <h3 className="font-mono font-bold text-white flex items-center gap-2">
-                PLANT INTERFACE
+                {/* PLANT INTERFACE */}
               </h3>
               
               <button 
