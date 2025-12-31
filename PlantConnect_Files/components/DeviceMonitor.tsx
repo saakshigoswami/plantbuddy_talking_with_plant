@@ -1082,6 +1082,62 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                     {arduinoState.raw > soundThreshold ? 'OPEN' : 'CLOSED'}
                  </div>
               </div>
+              
+              {/* Plant Image - Below Device State */}
+              {!isConnected && (
+                <div 
+                  className="flex flex-col items-center justify-center pt-4 border-t border-slate-800"
+                  onClick={handleSimulatedTouch}
+                  onTouchStart={handleSimulatedTouch}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {/* Speech Bubble */}
+                  {interactionMode === 'TALK' && (
+                    <div className="relative mb-2">
+                      <div className="bg-slate-800 border border-pink-400/30 rounded-2xl px-4 py-2 shadow-lg">
+                        <p className="text-sm text-slate-200 font-mono">I'm happy you're here.</p>
+                      </div>
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
+                        <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-slate-800"></div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Plant Image */}
+                  <div className={`relative transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img 
+                      key={`plant-${interactionMode}`}
+                      src="/assets/touch-plant.png" 
+                      alt="Touch Plant" 
+                      className={`object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (target.src.includes('.png')) {
+                          target.src = '/assets/touch-plant.jpg';
+                        } else if (target.src.includes('.jpg')) {
+                          target.src = '/assets/hero-plant.jpg';
+                        }
+                      }}
+                      style={{ 
+                        width: '150px',
+                        height: '150px',
+                        objectFit: 'contain'
+                      }}
+                    />
+                    {/* Music Note Icon */}
+                    {interactionMode === 'MUSIC' && (
+                      <Music className="w-5 h-5 text-pink-400 absolute top-0 right-0" />
+                    )}
+                  </div>
+                  
+                  {/* Demo Button */}
+                  <button className="mt-3 bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700/50 shadow-lg hover:bg-slate-700/90 transition-colors w-full">
+                    <p className="text-xs font-mono text-center text-white font-semibold">
+                      {interactionMode === 'MUSIC' ? 'Tap on me to play demo plant piano' : 'Tap on me to talk with your plant'}
+                    </p>
+                  </button>
+                </div>
+              )}
            </div>
 
            <div className="bg-black p-4 rounded-xl border border-slate-800 font-mono text-[10px] relative overflow-hidden h-32 flex flex-col">
@@ -1168,104 +1224,30 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
            )}
         </div>
 
-        {/* Plant Image Section - Centered in Plant Interface */}
-        {!isConnected && (
-          <div 
-            className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden"
-            onClick={handleSimulatedTouch}
-            onTouchStart={handleSimulatedTouch}
-            style={{ cursor: 'pointer' }}
-          >
-            {/* Visual feedback overlay when touching */}
-            {isSimulatedTouching && (
-              <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
-            )}
-            
-            {/* Plant Image with Speech Bubble */}
-            <div className="relative z-10 flex flex-col items-center gap-4">
-              {/* Speech Bubble */}
-              {interactionMode === 'TALK' && (
-                <div className="relative mb-2">
-                  <div className="bg-slate-800 border border-pink-400/30 rounded-2xl px-4 py-2 shadow-lg">
-                    <p className="text-sm text-slate-200 font-mono">I'm happy you're here.</p>
-                  </div>
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-                    <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-slate-800"></div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Plant Image */}
-              <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img 
-                  key={`plant-${interactionMode}`}
-                  src="/assets/touch-plant.png" 
-                  alt="Touch Plant" 
-                  className={`object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    if (target.src.includes('.png')) {
-                      target.src = '/assets/touch-plant.jpg';
-                    } else if (target.src.includes('.jpg')) {
-                      target.src = '/assets/hero-plant.jpg';
-                    }
-                  }}
-                  style={{ 
-                    width: '192px',
-                    height: '192px',
-                    objectFit: 'contain'
-                  }}
-                />
-              </div>
-              
-              {/* Music Note Icon (for MUSIC mode) */}
-              {interactionMode === 'MUSIC' && (
-                <Music className="w-6 h-6 text-pink-400 absolute top-4 right-4" />
-              )}
-              
-              {/* Instruction Buttons */}
-              <div className="flex flex-col items-center gap-2 mt-4">
-                <button className="bg-slate-800/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700/50 shadow-lg hover:bg-slate-700/90 transition-colors">
-                  <p className="text-sm font-mono text-center text-white font-semibold">
-                    {interactionMode === 'MUSIC' ? 'Tap on me to play demo plant piano' : 'Tap on me to talk with your plant'}
-                  </p>
-                </button>
-                <button className="bg-pink-500/20 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-pink-400/30 shadow-md">
-                  <p className="text-xs font-mono text-center text-pink-300 font-bold">
-                    Simulated touch for demo
-                  </p>
-                </button>
+        {/* Messages Area */}
+        <div 
+          className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative"
+        >
+          {messages.length === 0 && isConnected && interactionMode === 'TALK' && (
+            <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
+              <Leaf className="w-12 h-12 mb-2" />
+              <p className="text-sm font-mono text-center">
+                Touch plant to chat.
+              </p>
+            </div>
+          )}
+          {interactionMode === 'TALK' && messages.map((msg, idx) => (
+            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
+              <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${
+                msg.role === 'user' 
+                  ? 'bg-slate-700 border border-slate-600 text-white rounded-tr-none' 
+                  : 'bg-slate-800 border border-pink-400/20 text-slate-200 rounded-tl-none'
+              }`}>
+                {msg.text}
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Messages - Only show when there are messages or device is connected */}
-        {(isConnected || messages.length > 0) && (
-          <div 
-            className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative"
-          >
-            {messages.length === 0 && isConnected && interactionMode === 'TALK' && (
-              <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
-                <Leaf className="w-12 h-12 mb-2" />
-                <p className="text-sm font-mono text-center">
-                  Touch plant to chat.
-                </p>
-              </div>
-            )}
-            {interactionMode === 'TALK' && messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
-                <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${
-                  msg.role === 'user' 
-                    ? 'bg-slate-700 border border-slate-600 text-white rounded-tr-none' 
-                    : 'bg-slate-800 border border-pink-400/20 text-slate-200 rounded-tl-none'
-                }`}>
-                  {msg.text}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
 
         {/* Input Area */}
         <div className="p-4 bg-slate-950/50 border-t border-slate-800">
