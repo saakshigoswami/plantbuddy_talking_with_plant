@@ -277,3 +277,8 @@ class ConfluentService {
 // Singleton instance
 export const confluentService = new ConfluentService();
 
+// Expose to window for browser console testing
+if (typeof window !== 'undefined') {
+  (window as any).confluentService = confluentService;
+}
+
