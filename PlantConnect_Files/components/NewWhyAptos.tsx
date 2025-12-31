@@ -91,13 +91,33 @@ const NewWhyGoogleConfluent: React.FC = () => {
         {/* Technology Stack */}
         <div className="mt-12 text-center p-8 bg-brand-green/5 rounded-2xl border border-brand-green/20 animate-fade-in" style={{ animationDelay: "0.4s" }}>
           <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-wide">
-            Powered by Industry-Leading Technologies
+            Powered by Confluent Cloud & Google Cloud Vertex AI
           </h3>
-          <p className="text-lg text-slate-300 mb-4">
-            Confluent Cloud for real-time data streaming • Google Cloud Vertex AI for intelligent analysis
+          <p className="text-lg text-slate-300 mb-6">
+            <span className="font-bold text-brand-green">Confluent Cloud</span> for real-time data streaming • <span className="font-bold text-brand-pink">Google Cloud Vertex AI</span> for intelligent analysis
           </p>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="p-6 bg-slate-900/50 rounded-xl border border-slate-700/50">
+              <h4 className="text-xl font-bold mb-3 text-brand-green">Confluent Cloud</h4>
+              <ul className="text-sm text-slate-300 space-y-2 text-left">
+                <li>• Real-time Kafka streaming infrastructure</li>
+                <li>• Scalable event processing</li>
+                <li>• Low-latency data pipelines</li>
+                <li>• Enterprise-grade reliability</li>
+              </ul>
+            </div>
+            <div className="p-6 bg-slate-900/50 rounded-xl border border-slate-700/50">
+              <h4 className="text-xl font-bold mb-3 text-brand-pink">Vertex AI</h4>
+              <ul className="text-sm text-slate-300 space-y-2 text-left">
+                <li>• Real-time AI model inference</li>
+                <li>• Anomaly detection & predictions</li>
+                <li>• Health score calculations</li>
+                <li>• Intelligent recommendations</li>
+              </ul>
+            </div>
+          </div>
           <p className="text-sm text-slate-400 max-w-2xl mx-auto">
-            Real-time sensor data streams to Confluent Kafka topics. Google Cloud AI processes the stream to generate health insights, detect anomalies, and provide actionable recommendations instantly.
+            Sensor data streams to Confluent Cloud Kafka topics every second. Google Cloud Vertex AI processes the stream in real-time to generate health insights, detect anomalies, and provide actionable recommendations instantly. This is AI on data in motion.
           </p>
         </div>
       </div>

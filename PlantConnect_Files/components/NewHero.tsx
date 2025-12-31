@@ -45,10 +45,10 @@ const NewHero: React.FC<NewHeroProps> = ({ onStart }) => {
               An IoT device that wraps around your plant. Now you can talk to your plant or play it like a piano.
             </p>
             <p className="text-white/80 text-sm mb-4">
-              A gentle, private, and empathetic plant companion.
+              A gentle, private, and empathetic plant companion powered by <span className="font-bold text-[#ff6b9d]">Confluent Cloud</span> and <span className="font-bold text-[#ff6b9d]">Google Cloud Vertex AI</span>.
             </p>
             <p className="text-white/70 text-sm mb-8">
-              Experience nature × AI × Cognitive Emotional Data Economy.
+              Real-time streaming data analytics with AI-powered insights. Experience nature × AI × Streaming Data.
             </p>
             <button
               onClick={onStart}

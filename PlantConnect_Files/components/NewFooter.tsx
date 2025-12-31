@@ -16,8 +16,11 @@ const NewFooter: React.FC<NewFooterProps> = ({ onStart }) => {
           <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-white">
             Let's grow connection together 🌱
           </h2>
-          <p className="text-xl text-slate-300 mb-8">
+          <p className="text-xl text-slate-300 mb-4">
             PlantBuddy — Built with privacy-by-design
+          </p>
+          <p className="text-sm text-slate-400 mb-8">
+            Powered by <span className="font-bold text-brand-green">Confluent Cloud</span> for real-time streaming and <span className="font-bold text-brand-pink">Google Cloud Vertex AI</span> for intelligent analysis
           </p>
           <button
             onClick={onStart}

@@ -17,14 +17,14 @@ const NewHowItWorks: React.FC = () => {
     },
     {
       icon: Brain,
-      title: "Predict & Infer",
-      description: "AI analyzes real-time data streams to predict plant health and provide emotional feedback.",
+      title: "Vertex AI Analysis",
+      description: "Google Cloud Vertex AI analyzes streaming data from Confluent Cloud to predict plant health, detect anomalies, and provide real-time recommendations with emotional intelligence.",
       gradient: true,
     },
     {
       icon: Database,
-      title: "Real-Time Streaming",
-      description: "Stream sensor data to Confluent Cloud for real-time analysis with Google Cloud AI.",
+      title: "Confluent Cloud Streaming",
+      description: "Sensor data streams to Confluent Cloud Kafka topics in real-time. Google Cloud Vertex AI processes the stream to generate instant health insights, anomaly detection, and predictive analytics.",
       gradient: true,
     },
   ];
