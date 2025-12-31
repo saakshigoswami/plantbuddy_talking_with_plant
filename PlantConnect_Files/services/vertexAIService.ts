@@ -377,14 +377,36 @@ Respond in JSON format:
     healthInsight: PlantHealthInsight,
     conversationHistory: Array<{ role: string; text: string }>
   ): Promise<string> {
-    // Determine emotional context and question type
+    // Plant's name
+    const plantName = "Luna"; // A gentle, calming name
+    
+    // Advanced emotional analysis from text (cognitive therapist approach)
     const userMessageLower = userMessage.toLowerCase().trim();
+    
+    // Positive emotions
     const isUserHappy = userMessageLower.includes('happy') || userMessageLower.includes('great') || 
                        userMessageLower.includes('awesome') || userMessageLower.includes('excited') ||
-                       userMessageLower.includes('good') || userMessageLower.includes('wonderful');
+                       userMessageLower.includes('good') || userMessageLower.includes('wonderful') ||
+                       userMessageLower.includes('amazing') || userMessageLower.includes('fantastic') ||
+                       userMessageLower.includes('love') || userMessageLower.includes('joy');
+    
+    // Negative emotions - comprehensive detection for therapeutic support
     const isUserSad = userMessageLower.includes('sad') || userMessageLower.includes('bad') || 
                      userMessageLower.includes('tired') || userMessageLower.includes('stressed') ||
-                     userMessageLower.includes('worried') || userMessageLower.includes('anxious');
+                     userMessageLower.includes('worried') || userMessageLower.includes('anxious') ||
+                     userMessageLower.includes('depressed') || userMessageLower.includes('down') ||
+                     userMessageLower.includes('upset') || userMessageLower.includes('frustrated') ||
+                     userMessageLower.includes('angry') || userMessageLower.includes('mad') ||
+                     userMessageLower.includes('lonely') || userMessageLower.includes('alone') ||
+                     userMessageLower.includes('scared') || userMessageLower.includes('afraid') ||
+                     userMessageLower.includes('overwhelmed') || userMessageLower.includes('exhausted') ||
+                     userMessageLower.includes('not fine') || userMessageLower.includes("don't feel") ||
+                     userMessageLower.includes('feeling bad') || userMessageLower.includes('feeling down') ||
+                     userMessageLower.includes('struggling') || userMessageLower.includes('difficult') ||
+                     userMessageLower.includes('hard') || userMessageLower.includes('tough');
+    
+    // Neutral/asking state
+    const isUserNeutral = !isUserHappy && !isUserSad;
     
     // Better question detection - check for question words, question marks, or specific queries
     const questionWords = ['how', 'what', 'why', 'when', 'where', 'who', 'which', 'can', 'could', 'would', 'should', 'is', 'are', 'do', 'does', 'did', 'will', 'water', 'level', 'temperature', 'humidity', 'light', 'moisture', 'health', 'status'];
