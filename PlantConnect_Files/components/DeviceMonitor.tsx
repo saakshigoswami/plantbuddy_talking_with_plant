@@ -1168,23 +1168,23 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
            )}
         </div>
 
-        {/* Messages Area - Only in TALK Mode, Limited Height */}
+        {/* Messages Area - Only in TALK Mode, Above Plant */}
         {interactionMode === 'TALK' && (
           <div 
-            className="overflow-y-auto p-4 space-y-4 scroll-smooth relative"
-            style={{ maxHeight: '200px', minHeight: '100px' }}
+            className="overflow-y-auto p-4 space-y-4 scroll-smooth border-b border-slate-800"
+            style={{ maxHeight: '150px', minHeight: '80px' }}
           >
             {messages.length === 0 && isConnected && (
               <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
-                <Leaf className="w-12 h-12 mb-2" />
-                <p className="text-sm font-mono text-center">
+                <Leaf className="w-8 h-8 mb-2" />
+                <p className="text-xs font-mono text-center">
                   Touch plant to chat.
                 </p>
               </div>
             )}
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
-                <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${
+                <div className={`max-w-[85%] p-2 rounded-2xl text-xs leading-relaxed ${
                   msg.role === 'user' 
                     ? 'bg-slate-700 border border-slate-600 text-white rounded-tr-none' 
                     : 'bg-slate-800 border border-pink-400/20 text-slate-200 rounded-tl-none'
@@ -1196,9 +1196,9 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
           </div>
         )}
 
-        {/* Plant Image - Centered, Always Visible */}
+        {/* Plant Image - Centered, Always Visible, Same Position for Both Modes */}
         <div 
-          className="flex flex-col items-center justify-center py-4 px-4"
+          className="flex flex-col items-center justify-center py-6 px-4 flex-shrink-0"
           onClick={handleSimulatedTouch}
           onTouchStart={handleSimulatedTouch}
           style={{ cursor: 'pointer' }}
@@ -1258,7 +1258,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
 
         {/* Input Area - Only in TALK Mode, Below Plant */}
         {interactionMode === 'TALK' && (
-          <div className="p-4 bg-slate-950/50 border-t border-slate-800">
+          <div className="p-4 bg-slate-950/50 border-t border-slate-800 flex-shrink-0">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -1267,7 +1267,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 placeholder={isListening ? "Listening..." : "Type message..."}
                 disabled={!isRecording || isListening}
-                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none text-sm"
+                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 focus:outline-none text-xs"
               />
               <button 
                 onClick={toggleListening}
@@ -1278,11 +1278,11 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                   : 'bg-slate-800 text-pink-400 border-slate-700'
                 }`}
               >
-                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
               </button>
               {!isListening && (
                 <button onClick={handleSendMessage} disabled={!isRecording || !inputText.trim()} className="p-2 bg-pink-400 text-slate-900 rounded-lg">
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4" />
                 </button>
               )}
             </div>
