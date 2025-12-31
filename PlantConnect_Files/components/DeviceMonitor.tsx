@@ -1084,13 +1084,13 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
               </div>
               
               {/* Plant Image - Below Device State */}
-              {!isConnected && (
-                <div 
-                  className="flex flex-col items-center justify-center pt-4 border-t border-slate-800"
-                  onClick={handleSimulatedTouch}
-                  onTouchStart={handleSimulatedTouch}
-                  style={{ cursor: 'pointer' }}
-                >
+              {/* Temporarily always show for testing */}
+              <div 
+                className="flex flex-col items-center justify-center pt-4 border-t border-slate-800"
+                onClick={handleSimulatedTouch}
+                onTouchStart={handleSimulatedTouch}
+                style={{ cursor: 'pointer', minHeight: '200px' }}
+              >
                   {/* Speech Bubble - Always show */}
                   <div className="relative mb-2">
                     <div className="bg-slate-800 border border-pink-400/30 rounded-2xl px-4 py-2 shadow-lg">
@@ -1135,7 +1135,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                     </p>
                   </button>
                 </div>
-              )}
+              {/* Temporarily removed condition for testing */}
            </div>
 
            <div className="bg-black p-4 rounded-xl border border-slate-800 font-mono text-[10px] relative overflow-hidden h-32 flex flex-col">
@@ -1162,7 +1162,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
         <div className="p-4 border-b border-slate-800 bg-slate-950/50 z-10">
            <div className="flex justify-between items-center mb-3">
               <h3 className="font-mono font-bold text-white flex items-center gap-2">
-                {/* PLANT INTERFACE */}
+                PLANT INTERFACE
               </h3>
               
               <button 
