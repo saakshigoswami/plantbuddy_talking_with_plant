@@ -1167,10 +1167,38 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
               </div>
            )}
 
+           {/* Messages Area - Inside Plant Interface Box, Only in TALK Mode */}
+           {interactionMode === 'TALK' && (
+             <div 
+               className="mt-3 px-4 overflow-y-auto space-y-4 scroll-smooth border-t border-slate-800"
+               style={{ maxHeight: '200px', minHeight: '100px' }}
+             >
+               {messages.length === 0 && isConnected && (
+                 <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50 py-4">
+                   <Leaf className="w-8 h-8 mb-2" />
+                   <p className="text-xs font-mono text-center">
+                     Touch plant to chat.
+                   </p>
+                 </div>
+               )}
+               {messages.map((msg, idx) => (
+                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
+                   <div className={`max-w-[85%] p-2 rounded-2xl text-xs leading-relaxed ${
+                     msg.role === 'user' 
+                       ? 'bg-slate-700 border border-slate-600 text-white rounded-tr-none' 
+                       : 'bg-slate-800 border border-pink-400/20 text-slate-200 rounded-tl-none'
+                   }`}>
+                     {msg.text}
+                   </div>
+                 </div>
+               ))}
+             </div>
+           )}
+
            {/* Input Area - Inside Plant Interface Box, Only in TALK Mode */}
            {interactionMode === 'TALK' && (
-             <div className="mt-3 px-4 pb-4">
-               <div className="flex gap-2">
+             <div className="mt-3 px-4 pb-4 border-t border-slate-800">
+               <div className="flex gap-2 pt-3">
                  <input
                    type="text"
                    value={inputText}
@@ -1200,34 +1228,6 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
              </div>
            )}
         </div>
-
-        {/* Messages Area - Only in TALK Mode, Above Plant */}
-        {interactionMode === 'TALK' && (
-          <div 
-            className="overflow-y-auto p-4 space-y-4 scroll-smooth border-b border-slate-800"
-            style={{ maxHeight: '150px', minHeight: '80px' }}
-          >
-            {messages.length === 0 && isConnected && (
-              <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
-                <Leaf className="w-8 h-8 mb-2" />
-                <p className="text-xs font-mono text-center">
-                  Touch plant to chat.
-                </p>
-              </div>
-            )}
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
-                <div className={`max-w-[85%] p-2 rounded-2xl text-xs leading-relaxed ${
-                  msg.role === 'user' 
-                    ? 'bg-slate-700 border border-slate-600 text-white rounded-tr-none' 
-                    : 'bg-slate-800 border border-pink-400/20 text-slate-200 rounded-tl-none'
-                }`}>
-                  {msg.text}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Plant Image - Centered, Always Visible, Same Position for Both Modes */}
         <div 
