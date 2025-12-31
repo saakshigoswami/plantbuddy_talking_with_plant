@@ -30,17 +30,28 @@
 -- ============================================
 
 -- ============================================
--- IMPORTANT: Topics vs Tables
+-- IMPORTANT: Understanding Streams vs Tables
 -- ============================================
--- TOPICS: Where your data streams (Kafka topics)
---   - plant_sensor_data (your main sensor data)
---   - plant.health.insights (AI analysis results)
---   - plant.health.alerts (critical alerts)
+-- 
+-- STREAM (plant_sensor_stream):
+--   - Reads data FROM your Kafka topic (plant_sensor_data)
+--   - Shows ALL events as they come in (like a log)
+--   - Data flows through it (temporary view)
+--   - Used to process/transform data
 --
--- TABLES: Created FROM topics using ksqlDB queries
---   - Tables aggregate/transform data from topics
---   - You can query tables in the Confluent console
---   - Tables update automatically as new data streams
+-- TABLE (plant_sensor_latest):
+--   - Created FROM the stream
+--   - Stores the LATEST value for each device (aggregated)
+--   - Can be queried like a database table
+--   - Updates automatically when new data arrives
+--   - This is what you'll query in the console!
+--
+-- Think of it like this:
+--   Topic → Stream (reads all events) → Table (stores latest per device)
+--
+-- Why both?
+--   - Stream: Processes incoming data
+--   - Table: Stores the result you want to query
 -- ============================================
 
 -- ============================================

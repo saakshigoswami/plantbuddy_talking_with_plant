@@ -9,6 +9,39 @@ You have **3 topics**:
 
 ---
 
+## 🔄 Understanding Streams vs Tables
+
+**Why are there two things: `plant_sensor_stream` and `plant_sensor_latest`?**
+
+### **STREAM** (`plant_sensor_stream`):
+- **Purpose**: Reads ALL data from your Kafka topic
+- **Behavior**: Shows every event as it streams in (like a log file)
+- **Use**: Processing and transforming data
+- **Example**: If 100 events come in, the stream shows all 100
+
+### **TABLE** (`plant_sensor_latest`):
+- **Purpose**: Stores the LATEST value for each device
+- **Behavior**: Aggregates data - keeps only the most recent reading per device
+- **Use**: Querying current state (what you'll use in console!)
+- **Example**: If 100 events come in for device "plant01", the table shows only the latest one
+
+### **The Flow**:
+```
+Kafka Topic (plant_sensor_data)
+    ↓
+Stream (plant_sensor_stream) - reads all events
+    ↓
+Table (plant_sensor_latest) - stores latest per device
+    ↓
+You query the TABLE in console!
+```
+
+**In simple terms:**
+- **Stream** = All the data flowing through (temporary)
+- **Table** = The organized result you want to query (permanent)
+
+---
+
 ## 🎯 Step-by-Step: Which Query for Which Topic
 
 ### **TOPIC 1: `plant_sensor_data`**
