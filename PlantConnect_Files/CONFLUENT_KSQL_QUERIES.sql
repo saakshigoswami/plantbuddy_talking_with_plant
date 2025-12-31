@@ -2,13 +2,29 @@
 -- Confluent Cloud ksqlDB Queries for PlantBuddy
 -- ============================================
 -- 
--- These queries create streams and tables in Confluent Cloud
--- for the AI Partner Catalyst Hackathon
+-- IMPORTANT: Topics vs Tables
+-- ============================================
+-- TOPICS (what you already have):
+--   - These are Kafka topics where data streams
+--   - You have 3 topics: plant_sensor_data, plant.health.insights, plant.health.alerts
+--   - Topics are like "buckets" that hold streaming data
+--
+-- TABLES (what you'll create):
+--   - Tables are created FROM topics using ksqlDB queries
+--   - Tables aggregate/transform data from topics
+--   - You can query tables in the Confluent console
+--   - Tables update automatically as new data streams
+--
+-- Think of it like this:
+--   Topic = Raw streaming data (like a log file)
+--   Table = Organized, queryable view of that data (like a database table)
+-- ============================================
 --
 -- Prerequisites:
--- 1. Create topics in Confluent Cloud:
---    - plant-sensor-data (or plant.sensor.raw)
---    - plant-health-insights (or plant.health.insights)
+-- 1. You already have these topics in Confluent Cloud:
+--    - plant_sensor_data
+--    - plant.health.insights
+--    - plant.health.alerts
 -- 2. Enable ksqlDB in your Confluent Cloud environment
 -- 3. Run these queries in the ksqlDB Editor
 -- ============================================
