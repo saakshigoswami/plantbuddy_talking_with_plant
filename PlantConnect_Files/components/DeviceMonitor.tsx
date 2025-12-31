@@ -1166,6 +1166,39 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                 </div>
               </div>
            )}
+
+           {/* Input Area - Inside Plant Interface Box, Only in TALK Mode */}
+           {interactionMode === 'TALK' && (
+             <div className="mt-3 px-4 pb-4">
+               <div className="flex gap-2">
+                 <input
+                   type="text"
+                   value={inputText}
+                   onChange={(e) => setInputText(e.target.value)}
+                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                   placeholder={isListening ? "Listening..." : "Type message..."}
+                   disabled={!isRecording || isListening}
+                   className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 focus:outline-none text-xs"
+                 />
+                 <button 
+                   onClick={toggleListening}
+                   disabled={!isRecording}
+                   className={`p-2 rounded-lg transition-all border disabled:opacity-50 ${
+                     isListening 
+                     ? 'bg-red-500 text-white border-red-400 animate-pulse' 
+                     : 'bg-slate-800 text-pink-400 border-slate-700'
+                   }`}
+                 >
+                   {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                 </button>
+                 {!isListening && (
+                   <button onClick={handleSendMessage} disabled={!isRecording || !inputText.trim()} className="p-2 bg-pink-400 text-slate-900 rounded-lg">
+                     <Send className="w-4 h-4" />
+                   </button>
+                 )}
+               </div>
+             </div>
+           )}
         </div>
 
         {/* Messages Area - Only in TALK Mode, Above Plant */}
@@ -1256,38 +1289,6 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
           </button>
         </div>
 
-        {/* Input Area - Only in TALK Mode, Below Plant */}
-        {interactionMode === 'TALK' && (
-          <div className="p-4 bg-slate-950/50 border-t border-slate-800 flex-shrink-0">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder={isListening ? "Listening..." : "Type message..."}
-                disabled={!isRecording || isListening}
-                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-3 py-2 focus:outline-none text-xs"
-              />
-              <button 
-                onClick={toggleListening}
-                disabled={!isRecording}
-                className={`p-2 rounded-lg transition-all border disabled:opacity-50 ${
-                  isListening 
-                  ? 'bg-red-500 text-white border-red-400 animate-pulse' 
-                  : 'bg-slate-800 text-pink-400 border-slate-700'
-                }`}
-              >
-                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              </button>
-              {!isListening && (
-                <button onClick={handleSendMessage} disabled={!isRecording || !inputText.trim()} className="p-2 bg-pink-400 text-slate-900 rounded-lg">
-                  <Send className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Bio-Sonification Status - Bottom of Right Panel */}
         {interactionMode === 'MUSIC' && (
