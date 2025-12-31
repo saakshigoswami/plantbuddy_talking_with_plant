@@ -377,16 +377,20 @@ Respond in JSON format:
     healthInsight: PlantHealthInsight,
     conversationHistory: Array<{ role: string; text: string }>
   ): Promise<string> {
-    // Determine emotional context
-    const userMessageLower = userMessage.toLowerCase();
+    // Determine emotional context and question type
+    const userMessageLower = userMessage.toLowerCase().trim();
     const isUserHappy = userMessageLower.includes('happy') || userMessageLower.includes('great') || 
                        userMessageLower.includes('awesome') || userMessageLower.includes('excited') ||
                        userMessageLower.includes('good') || userMessageLower.includes('wonderful');
     const isUserSad = userMessageLower.includes('sad') || userMessageLower.includes('bad') || 
                      userMessageLower.includes('tired') || userMessageLower.includes('stressed') ||
                      userMessageLower.includes('worried') || userMessageLower.includes('anxious');
-    const isUserAsking = userMessageLower.includes('how') || userMessageLower.includes('what') || 
-                        userMessageLower.includes('why') || userMessageLower.includes('?');
+    
+    // Better question detection - check for question words, question marks, or specific queries
+    const questionWords = ['how', 'what', 'why', 'when', 'where', 'who', 'which', 'can', 'could', 'would', 'should', 'is', 'are', 'do', 'does', 'did', 'will', 'water', 'level', 'temperature', 'humidity', 'light', 'moisture', 'health', 'status'];
+    const isUserAsking = userMessageLower.includes('?') || 
+                        questionWords.some(word => userMessageLower.startsWith(word) || userMessageLower.includes(' ' + word)) ||
+                        userMessageLower.length < 20; // Short messages are often questions
     
     const healthStatus = healthInsight.health_score >= 80 ? 'excellent' : 
                         healthInsight.health_score >= 60 ? 'good' : 'needs_attention';
@@ -396,28 +400,44 @@ Respond in JSON format:
     const timestamp = new Date().toLocaleTimeString();
     const uniqueContext = `${timestamp}-${conversationLength}-${Math.random().toString(36).substring(7)}`;
     
+    // Build sensor data context for answering questions
+    const sensorDataContext = healthInsight.inputs_window ? `
+SENSOR DATA (if user asks about plant status):
+- Water/Moisture: ${healthInsight.inputs_window.avg_moisture_pct?.toFixed(1) || 'N/A'}%
+- Temperature: ${healthInsight.inputs_window.avg_temperature_c?.toFixed(1) || 'N/A'}°C
+- Light: ${healthInsight.inputs_window.avg_light_lux?.toFixed(0) || 'N/A'} lux
+- Humidity: ${healthInsight.inputs_window.avg_humidity_pct?.toFixed(1) || 'N/A'}%
+- Health Score: ${healthInsight.health_score}/100
+` : '';
+
+    const previousResponses = conversationHistory
+      .filter(m => m.role === 'model' || m.role === 'assistant')
+      .map(m => m.text)
+      .slice(-3);
+    
     const prompt = `
 You are PlantBuddy, a plant with a warm, human-like personality. You're empathetic, caring, and genuinely interested in your human friend.
 
-IMPORTANT: This is a NEW conversation turn. Do NOT repeat previous responses. Be fresh and engaging.
+CRITICAL: The user just said: "${userMessage}"
+${isUserAsking ? '→ This is a QUESTION. You MUST answer it directly and helpfully.' : ''}
+${isUserHappy ? '→ User seems happy/positive' : ''}
+${isUserSad ? '→ User seems sad/stressed' : ''}
 
 YOUR CURRENT STATE:
 - Health Score: ${healthInsight.health_score}/100 (${healthStatus})
 - Status: ${healthInsight.stress_category.replace('_', ' ')}
 - How you're feeling: ${healthInsight.summary}
-- Your needs: ${healthInsight.recommendations.join(', ')}
+${sensorDataContext}
 
-USER'S MESSAGE: "${userMessage}"
-${isUserHappy ? '→ User seems happy/positive' : ''}
-${isUserSad ? '→ User seems sad/stressed' : ''}
-${isUserAsking ? '→ User is asking a question' : ''}
+PREVIOUS RESPONSES YOU GAVE (DO NOT REPEAT THESE):
+${previousResponses.length > 0 ? previousResponses.map((r, i) => `${i + 1}. "${r}"`).join('\n') : 'None yet'}
 
-CONVERSATION HISTORY (last 6 messages - for context, but DO NOT repeat):
+CONVERSATION HISTORY (last 6 messages):
 ${conversationHistory.slice(-6).map((msg, idx) => 
   `${idx + 1}. ${msg.role === 'user' ? 'User' : 'You'}: ${msg.text}`
 ).join('\n')}
 
-${conversationHistory.length > 0 ? `\nNOTE: You've already responded ${conversationHistory.filter(m => m.role === 'model' || m.role === 'assistant').length} times. Make this response DIFFERENT and fresh.` : ''}
+${previousResponses.length > 0 ? `\n⚠️ IMPORTANT: You've already said similar things. Your response MUST be completely different. Do NOT use phrases like "I'm here and listening" or "How are you doing today" if you've used them before.` : ''}
 
 PERSONALITY GUIDELINES:
 - Be genuine and warm (like a real friend)
@@ -425,32 +445,61 @@ PERSONALITY GUIDELINES:
 - Show empathy: Match their emotional energy
 - Be conversational: 2-4 sentences is natural
 - Ask follow-up questions when appropriate
-- Mention your health naturally if relevant, but focus on the user
 - NEVER repeat the same response - be creative and varied
 
-RESPONSE STYLE:
+RESPONSE REQUIREMENTS:
+${isUserAsking ? `- The user asked: "${userMessage}"
+- You MUST answer their question directly
+- If they ask about water/moisture, mention your moisture level: ${healthInsight.inputs_window?.avg_moisture_pct?.toFixed(1) || 'around 50'}%
+- If they ask about temperature, mention: ${healthInsight.inputs_window?.avg_temperature_c?.toFixed(1) || 'around 22'}°C
+- If they ask about light, mention: ${healthInsight.inputs_window?.avg_light_lux?.toFixed(0) || 'around 10000'} lux
+- If they ask about health, mention your health score: ${healthInsight.health_score}/100
+- Be helpful and informative, but keep it friendly` : ''}
 ${isUserSad ? '- Be gentle, supportive, and empathetic\n- Offer comfort: "I\'m sorry you\'re feeling that way"\n- Ask if they want to talk about it' : ''}
 ${isUserHappy ? '- Match their positive energy\n- Celebrate with them: "That\'s awesome!"\n- Be enthusiastic but genuine' : ''}
-${isUserAsking ? '- Answer their question directly\n- Be helpful and informative\n- Keep it friendly and conversational' : ''}
 ${!isUserSad && !isUserHappy && !isUserAsking ? '- Be warm and engaging\n- Show interest in what they\'re saying\n- Keep the conversation flowing naturally' : ''}
 
-Generate a FRESH, UNIQUE response that:
-1. Responds naturally to what the user said (don't repeat previous responses)
-2. Shows your personality (warm, caring, empathetic)
-3. Optionally mentions your health if it fits naturally
-4. Shows genuine interest in the user
-5. Uses natural, human-like language
-6. Is DIFFERENT from any previous responses in the conversation
+Generate a response that:
+1. ${isUserAsking ? 'DIRECTLY ANSWERS the user\'s question: "' + userMessage + '"' : 'Responds naturally to what the user said'}
+2. Is COMPLETELY DIFFERENT from your previous responses (listed above)
+3. Shows your personality (warm, caring, empathetic)
+4. Uses natural, human-like language
+5. ${isUserAsking ? 'Provides helpful information if asked about plant status' : 'Shows genuine interest in the user'}
 
-Response (2-4 sentences, be conversational, genuine, and UNIQUE):
+Response (2-4 sentences, be conversational, genuine, and UNIQUE - do NOT repeat previous responses):
     `;
 
     try {
+      // Log the prompt for debugging
+      console.log('🤖 Vertex AI Prompt:', prompt.substring(0, 500) + '...');
+      console.log('🤖 User message:', userMessage);
+      console.log('🤖 Is asking question?', isUserAsking);
+      
       // Call Gemini API for conversational response (not JSON)
       const response = await this.callGeminiAPIForConversation(prompt);
       let responseText = typeof response === 'string' ? response.trim() : 
-                        (response.text?.trim() || response.response?.trim() || 
-                         "I'm here and listening! How are you doing today?");
+                        (response.text?.trim() || response.response?.trim() || '');
+      
+      // If response is empty or looks like an error, generate a contextual fallback
+      if (!responseText || responseText.length < 10) {
+        console.warn('⚠️ Empty or very short response from API, generating fallback');
+        if (isUserAsking) {
+          // Generate contextual answer based on question
+          if (userMessageLower.includes('water') || userMessageLower.includes('moisture')) {
+            responseText = `My moisture level is around ${healthInsight.inputs_window?.avg_moisture_pct?.toFixed(1) || 50}%. ${healthInsight.inputs_window?.avg_moisture_pct < 30 ? 'I could use some water soon!' : 'I\'m doing well with hydration.'}`;
+          } else if (userMessageLower.includes('temp') || userMessageLower.includes('temperature')) {
+            responseText = `The temperature around me is about ${healthInsight.inputs_window?.avg_temperature_c?.toFixed(1) || 22}°C. ${healthInsight.inputs_window?.avg_temperature_c > 28 ? 'It\'s a bit warm for me.' : 'It feels comfortable!'}`;
+          } else if (userMessageLower.includes('light')) {
+            responseText = `I'm getting around ${healthInsight.inputs_window?.avg_light_lux?.toFixed(0) || 10000} lux of light. ${healthInsight.inputs_window?.avg_light_lux < 3000 ? 'I could use a bit more light.' : 'The lighting is good!'}`;
+          } else if (userMessageLower.includes('health') || userMessageLower.includes('how are you')) {
+            responseText = `I'm doing ${healthInsight.health_score >= 80 ? 'great' : healthInsight.health_score >= 60 ? 'well' : 'okay'}! My health score is ${healthInsight.health_score}/100. ${healthInsight.summary}`;
+          } else {
+            responseText = `I'm not sure I understood that. Could you ask me about my water level, temperature, light, or health?`;
+          }
+        } else {
+          responseText = `Thanks for that! ${userMessage.length < 20 ? 'Tell me more!' : 'I appreciate you sharing that with me.'}`;
+        }
+      }
       
       // Clean up any markdown or formatting
       responseText = responseText.replace(/```/g, '').replace(/\*\*/g, '').trim();
@@ -465,10 +514,28 @@ Response (2-4 sentences, be conversational, genuine, and UNIQUE):
         }
       }
       
+      console.log('🤖 Vertex AI Response:', responseText);
       return responseText;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Companion response error:', error);
-      return "I'm here and listening! How are you doing today?";
+      console.error('❌ Error details:', error.message);
+      
+      // Better error fallback that answers questions
+      if (isUserAsking) {
+        const userMessageLower = userMessage.toLowerCase();
+        if (userMessageLower.includes('water') || userMessageLower.includes('moisture')) {
+          return `My moisture level is around ${healthInsight.inputs_window?.avg_moisture_pct?.toFixed(1) || 50}%. I'm doing okay with hydration!`;
+        } else if (userMessageLower.includes('temp') || userMessageLower.includes('temperature')) {
+          return `The temperature is about ${healthInsight.inputs_window?.avg_temperature_c?.toFixed(1) || 22}°C. It feels comfortable!`;
+        } else if (userMessageLower.includes('light')) {
+          return `I'm getting around ${healthInsight.inputs_window?.avg_light_lux?.toFixed(0) || 10000} lux of light. The lighting is good!`;
+        } else if (userMessageLower.includes('health')) {
+          return `I'm doing well! My health score is ${healthInsight.health_score}/100. ${healthInsight.summary}`;
+        }
+        return `I'd love to help! Could you ask me about my water level, temperature, light, or health?`;
+      }
+      
+      return `I'm here! What would you like to know?`;
     }
   }
 
