@@ -1168,117 +1168,59 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
            )}
         </div>
 
+        {/* Plant Image Section - Separate from messages */}
+        {!isConnected && (
+          <div 
+            className="flex flex-col items-center justify-center py-6 px-4 border-b border-slate-800"
+            onClick={handleSimulatedTouch}
+            onTouchStart={handleSimulatedTouch}
+            style={{ 
+              minHeight: '200px',
+              cursor: 'pointer'
+            }}
+          >
+            <div className="flex flex-col items-center gap-3">
+              {/* Plant Image */}
+              <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img 
+                  key={`plant-${interactionMode}`}
+                  src="/assets/touch-plant.png" 
+                  alt="Touch Plant" 
+                  className={`object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (target.src.includes('.png')) {
+                      target.src = '/assets/touch-plant.jpg';
+                    } else if (target.src.includes('.jpg')) {
+                      target.src = '/assets/hero-plant.jpg';
+                    }
+                  }}
+                  style={{ 
+                    width: '192px',
+                    height: '192px',
+                    objectFit: 'contain'
+                  }}
+                />
+              </div>
+              {/* Instruction Text */}
+              <div className="text-center">
+                <p className="text-xs font-mono text-slate-400">
+                  {interactionMode === 'MUSIC' ? 'Tap the plant to play music' : 'Tap the plant to start conversation'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Messages */}
         <div 
-          className={`flex-1 overflow-y-auto overflow-x-visible p-4 space-y-4 scroll-smooth relative ${
-            !isConnected ? 'cursor-pointer select-none' : ''
-          } ${isSimulatedTouching ? 'bg-gradient-to-b from-pink-900/20 to-slate-900' : ''}`}
-          onClick={!isConnected ? handleSimulatedTouch : undefined}
-          onTouchStart={!isConnected ? handleSimulatedTouch : undefined}
-          title={!isConnected ? "Click or tap anywhere to simulate touching the plant" : ""}
+          className={`flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative ${
+            isSimulatedTouching ? 'bg-gradient-to-b from-pink-900/20 to-slate-900' : ''
+          }`}
         >
           {/* Visual feedback overlay when touching */}
           {isSimulatedTouching && (
             <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
-          )}
-          
-          {/* Plant Image - Always visible when no device connected */}
-          {!isConnected && (
-            <div 
-              className="flex justify-center items-center py-8 relative z-20 w-full" 
-              style={{ 
-                minHeight: '200px',
-                position: 'relative',
-                overflow: 'visible',
-                width: '100%'
-              }}
-            >
-              <div className="flex flex-col items-center gap-3 w-full">
-                {/* Plant Image */}
-                <div className="flex items-center justify-center gap-0 relative z-20 w-full" style={{ minHeight: '192px' }}>
-                  <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img 
-                      key={`plant-${interactionMode}`}
-                      src="/assets/touch-plant.png" 
-                      alt="Touch Plant" 
-                      className={`object-contain ${isSimulatedTouching ? 'drop-shadow-[0_0_20px_rgba(255,192,203,0.6)]' : ''}`}
-                      onError={(e) => {
-                        // Try fallback image if PNG doesn't load
-                        const target = e.target as HTMLImageElement;
-                        console.log('PNG failed, trying JPG...', target.src);
-                        if (target.src.includes('.png')) {
-                          target.src = '/assets/touch-plant.jpg';
-                        } else if (target.src.includes('.jpg')) {
-                          // Try the other JPG
-                          target.src = '/assets/hero-plant.jpg';
-                        } else {
-                          // If all fail, show a plant emoji instead
-                          console.log('All images failed, showing emoji fallback');
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent && !parent.querySelector('.plant-emoji-fallback')) {
-                            const fallback = document.createElement('div');
-                            fallback.className = 'plant-emoji-fallback text-6xl';
-                            fallback.textContent = '🌱';
-                            parent.appendChild(fallback);
-                          }
-                        }
-                      }}
-                      onLoad={(e) => {
-                        // Ensure image is visible when loaded
-                        console.log('Plant image loaded successfully');
-                        const target = e.target as HTMLImageElement;
-                        target.style.setProperty('opacity', '1', 'important');
-                        target.style.setProperty('visibility', 'visible', 'important');
-                        target.style.setProperty('display', 'block', 'important');
-                        target.style.setProperty('position', 'relative', 'important');
-                        target.style.setProperty('z-index', '20', 'important');
-                        target.style.setProperty('max-width', '100%', 'important');
-                        target.style.setProperty('height', 'auto', 'important');
-                        console.log('Image styles applied:', {
-                          opacity: getComputedStyle(target).opacity,
-                          visibility: getComputedStyle(target).visibility,
-                          display: getComputedStyle(target).display,
-                          zIndex: getComputedStyle(target).zIndex,
-                          width: getComputedStyle(target).width,
-                          height: getComputedStyle(target).height
-                        });
-                      }}
-                      style={{ 
-                        opacity: 1, 
-                        visibility: 'visible',
-                        display: 'block',
-                        position: 'relative',
-                        zIndex: 20,
-                        transition: 'opacity 0.3s, transform 0.3s',
-                        backgroundColor: 'transparent',
-                        width: '192px',
-                        height: '192px',
-                        objectFit: 'contain'
-                      }}
-                    />
-                  </div>
-                  {interactionMode === 'MUSIC' && <span className="text-xl opacity-80 -ml-4 relative z-20">🎵</span>}
-                  {interactionMode === 'TALK' && <span className="text-xl opacity-80 -ml-4 relative z-20">💬</span>}
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Text Below Plant Image */}
-          {!isConnected && (
-            <div className="flex flex-col items-center gap-2 mt-4">
-              <div className="bg-slate-900/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-700/50 shadow-lg">
-                <p className="text-sm font-mono text-center text-white font-semibold whitespace-nowrap">
-                  {interactionMode === 'MUSIC' ? 'Tap on me to play demo plant piano' : 'Tap on me to talk with your plant'}
-                </p>
-              </div>
-              <div className="bg-pink-500/20 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-pink-400/30 shadow-md">
-                <p className="text-xs font-mono text-center text-pink-300 font-bold">
-                  Simulated touch for demo
-                </p>
-              </div>
-            </div>
           )}
           {/* Visual feedback overlay when touching */}
           {isSimulatedTouching && (
