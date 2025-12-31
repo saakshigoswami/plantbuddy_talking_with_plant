@@ -136,35 +136,36 @@ const App: React.FC = () => {
         </div>
       </nav>
 
+      {/* Toggle Buttons - Fixed at Top Center */}
+      <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-30">
+        <div className="flex items-center gap-1 bg-slate-800/50 p-1 rounded-lg border border-white/5">
+          <button
+            onClick={() => setView(ViewMode.DEVICE)}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+              view === ViewMode.DEVICE
+                ? 'bg-brand-blue text-brand-pink shadow-lg'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            <span>Device</span>
+          </button>
+          <button
+            onClick={() => setView(ViewMode.STREAMING)}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+              view === ViewMode.STREAMING
+                ? 'bg-brand-blue text-brand-pink shadow-lg'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            <span>Streaming</span>
+          </button>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main className="pt-24 px-4 max-w-7xl mx-auto min-h-screen">
-        {/* Toggle Buttons - Centered at Top */}
-        <div className="flex justify-center mb-6">
-          <div className="flex items-center gap-2 bg-slate-800/50 p-2 rounded-xl border border-white/5">
-            <button
-              onClick={() => setView(ViewMode.DEVICE)}
-              className={`px-6 py-3 rounded-lg text-base font-bold transition-all flex items-center gap-3 ${
-                view === ViewMode.DEVICE
-                  ? 'bg-brand-blue text-brand-pink shadow-lg'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Activity className="w-5 h-5" />
-              <span>Device</span>
-            </button>
-            <button
-              onClick={() => setView(ViewMode.STREAMING)}
-              className={`px-6 py-3 rounded-lg text-base font-bold transition-all flex items-center gap-3 ${
-                view === ViewMode.STREAMING
-                  ? 'bg-brand-blue text-brand-pink shadow-lg'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Activity className="w-5 h-5" />
-              <span>Streaming</span>
-            </button>
-          </div>
-        </div>
         
         <ErrorBoundary>
           {renderView()}
