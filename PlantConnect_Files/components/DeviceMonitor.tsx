@@ -1184,10 +1184,17 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
           
           {/* Plant Image - Always visible when no device connected */}
           {!isConnected && (
-            <div className="flex justify-center items-center py-8 relative z-10" style={{ minHeight: '200px' }}>
-              <div className="flex flex-col items-center gap-3">
+            <div 
+              className="flex justify-center items-center py-8 relative z-20 w-full" 
+              style={{ 
+                minHeight: '200px',
+                position: 'relative',
+                overflow: 'visible'
+              }}
+            >
+              <div className="flex flex-col items-center gap-3 w-full">
                 {/* Plant Image */}
-                <div className="flex items-center gap-0 relative z-10">
+                <div className="flex items-center justify-center gap-0 relative z-20 w-full">
                   <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`}>
                     <img 
                       key={`plant-${interactionMode}`}
@@ -1220,16 +1227,20 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                         // Ensure image is visible when loaded
                         console.log('Plant image loaded successfully');
                         const target = e.target as HTMLImageElement;
-                        target.style.opacity = '1';
-                        target.style.visibility = 'visible';
-                        target.style.display = 'block';
-                        target.style.position = 'relative';
-                        target.style.zIndex = '10';
+                        target.style.setProperty('opacity', '1', 'important');
+                        target.style.setProperty('visibility', 'visible', 'important');
+                        target.style.setProperty('display', 'block', 'important');
+                        target.style.setProperty('position', 'relative', 'important');
+                        target.style.setProperty('z-index', '20', 'important');
+                        target.style.setProperty('max-width', '100%', 'important');
+                        target.style.setProperty('height', 'auto', 'important');
                         console.log('Image styles applied:', {
-                          opacity: target.style.opacity,
-                          visibility: target.style.visibility,
-                          display: target.style.display,
-                          zIndex: target.style.zIndex
+                          opacity: getComputedStyle(target).opacity,
+                          visibility: getComputedStyle(target).visibility,
+                          display: getComputedStyle(target).display,
+                          zIndex: getComputedStyle(target).zIndex,
+                          width: getComputedStyle(target).width,
+                          height: getComputedStyle(target).height
                         });
                       }}
                       style={{ 
@@ -1237,14 +1248,16 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                         visibility: 'visible',
                         display: 'block',
                         position: 'relative',
-                        zIndex: 10,
+                        zIndex: 20,
                         transition: 'opacity 0.3s, transform 0.3s',
-                        backgroundColor: 'transparent'
+                        backgroundColor: 'transparent',
+                        maxWidth: '100%',
+                        height: 'auto'
                       }}
                     />
                   </div>
-                  {interactionMode === 'MUSIC' && <span className="text-xl opacity-80 -ml-4 relative z-10">🎵</span>}
-                  {interactionMode === 'TALK' && <span className="text-xl opacity-80 -ml-4 relative z-10">💬</span>}
+                  {interactionMode === 'MUSIC' && <span className="text-xl opacity-80 -ml-4 relative z-20">🎵</span>}
+                  {interactionMode === 'TALK' && <span className="text-xl opacity-80 -ml-4 relative z-20">💬</span>}
                 </div>
               </div>
             </div>
