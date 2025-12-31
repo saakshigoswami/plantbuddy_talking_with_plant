@@ -1168,20 +1168,24 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
            )}
         </div>
 
-        {/* Plant Image Section - Separate from messages */}
-        {!isConnected && (
-          <div 
-            className="flex flex-col items-center justify-center py-6 px-4 border-b border-slate-800"
-            onClick={handleSimulatedTouch}
-            onTouchStart={handleSimulatedTouch}
-            style={{ 
-              minHeight: '200px',
-              cursor: 'pointer'
-            }}
-          >
-            <div className="flex flex-col items-center gap-3">
-              {/* Plant Image */}
-              <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* Messages */}
+        <div 
+          className={`flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative ${
+            !isConnected ? 'cursor-pointer select-none' : ''
+          } ${isSimulatedTouching ? 'bg-gradient-to-b from-pink-900/20 to-slate-900' : ''}`}
+          onClick={!isConnected ? handleSimulatedTouch : undefined}
+          onTouchStart={!isConnected ? handleSimulatedTouch : undefined}
+          title={!isConnected ? "Click or tap anywhere to simulate touching the plant" : ""}
+        >
+          {/* Visual feedback overlay when touching */}
+          {isSimulatedTouching && (
+            <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
+          )}
+          
+          {/* Plant Image - Show when no device connected and no messages */}
+          {!isConnected && messages.length === 0 && (
+            <div className="h-full flex flex-col items-center justify-center">
+              <div className={`transition-transform ${isSimulatedTouching ? 'scale-110' : 'scale-100'}`} style={{ width: '192px', height: '192px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
                 <img 
                   key={`plant-${interactionMode}`}
                   src="/assets/touch-plant.png" 
@@ -1202,25 +1206,10 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
                   }}
                 />
               </div>
-              {/* Instruction Text */}
-              <div className="text-center">
-                <p className="text-xs font-mono text-slate-400">
-                  {interactionMode === 'MUSIC' ? 'Tap the plant to play music' : 'Tap the plant to start conversation'}
-                </p>
-              </div>
+              <p className="text-xs font-mono text-slate-400 text-center">
+                {interactionMode === 'MUSIC' ? 'Tap the plant to play music' : 'Tap the plant to start conversation'}
+              </p>
             </div>
-          </div>
-        )}
-
-        {/* Messages */}
-        <div 
-          className={`flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative ${
-            isSimulatedTouching ? 'bg-gradient-to-b from-pink-900/20 to-slate-900' : ''
-          }`}
-        >
-          {/* Visual feedback overlay when touching */}
-          {isSimulatedTouching && (
-            <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
           )}
           
           {messages.length === 0 && isConnected && interactionMode === 'TALK' && (
