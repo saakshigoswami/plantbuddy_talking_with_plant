@@ -1254,47 +1254,52 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-slate-950/50 border-t border-slate-800">
-          {interactionMode === 'TALK' ? (
-             <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder={isListening ? "Listening..." : "Type message..."}
-                  disabled={!isRecording || isListening}
-                  className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none text-sm"
-                />
-                <button 
-                  onClick={toggleListening}
-                  disabled={!isRecording}
-                  className={`p-2 rounded-lg transition-all border disabled:opacity-50 ${
-                    isListening 
-                    ? 'bg-red-500 text-white border-red-400 animate-pulse' 
-                    : 'bg-slate-800 text-pink-400 border-slate-700'
-                  }`}
-                >
-                  {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        {interactionMode === 'TALK' && (
+          <div className="p-4 bg-slate-950/50 border-t border-slate-800">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder={isListening ? "Listening..." : "Type message..."}
+                disabled={!isRecording || isListening}
+                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none text-sm"
+              />
+              <button 
+                onClick={toggleListening}
+                disabled={!isRecording}
+                className={`p-2 rounded-lg transition-all border disabled:opacity-50 ${
+                  isListening 
+                  ? 'bg-red-500 text-white border-red-400 animate-pulse' 
+                  : 'bg-slate-800 text-pink-400 border-slate-700'
+                }`}
+              >
+                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </button>
+              {!isListening && (
+                <button onClick={handleSendMessage} disabled={!isRecording || !inputText.trim()} className="p-2 bg-pink-400 text-slate-900 rounded-lg">
+                  <Send className="w-5 h-5" />
                 </button>
-                {!isListening && (
-                  <button onClick={handleSendMessage} disabled={!isRecording || !inputText.trim()} className="p-2 bg-pink-400 text-slate-900 rounded-lg">
-                    <Send className="w-5 h-5" />
-                  </button>
-                )}
-             </div>
-          ) : (
-             <div className="flex flex-col items-center justify-center text-pink-400 font-mono text-xs gap-1 py-1">
-                <div className="flex items-center gap-2">
-                   <Music className="w-4 h-4" />
-                   <span>Bio-Sonification Active (Violin Mode)</span>
-                </div>
-                <div className="text-slate-500">
-                   (Signal: {arduinoState.raw} / Threshold: {soundThreshold})
-                </div>
-             </div>
-          )}
-        </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Bio-Sonification Status - Bottom of Right Panel */}
+        {interactionMode === 'MUSIC' && (
+          <div className="p-4 bg-slate-950/50 border-t border-slate-800">
+            <div className="flex flex-col items-center justify-center text-pink-400 font-mono text-xs gap-1 py-1">
+              <div className="flex items-center gap-2">
+                <Music className="w-4 h-4" />
+                <span>Bio-Sonification Active (Violin Mode)</span>
+              </div>
+              <div className="text-slate-500">
+                (Signal: {arduinoState.raw} / Threshold: {soundThreshold})
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {/* End grid wrapper */}
 
