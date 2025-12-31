@@ -1168,67 +1168,37 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
            )}
         </div>
 
-        {/* Messages Area - Above Plant Image */}
-        <div 
-          className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative min-h-0"
-        >
-          {messages.length === 0 && isConnected && interactionMode === 'TALK' && (
-            <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
-              <Leaf className="w-12 h-12 mb-2" />
-              <p className="text-sm font-mono text-center">
-                Touch plant to chat.
-              </p>
-            </div>
-          )}
-          {interactionMode === 'TALK' && messages.map((msg, idx) => (
-            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
-              <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${
-                msg.role === 'user' 
-                  ? 'bg-slate-700 border border-slate-600 text-white rounded-tr-none' 
-                  : 'bg-slate-800 border border-pink-400/20 text-slate-200 rounded-tl-none'
-              }`}>
-                {msg.text}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Input Area - Above Plant Image */}
+        {/* Messages Area - Only in TALK Mode, Limited Height */}
         {interactionMode === 'TALK' && (
-          <div className="p-4 bg-slate-950/50 border-t border-slate-800">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder={isListening ? "Listening..." : "Type message..."}
-                disabled={!isRecording || isListening}
-                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none text-sm"
-              />
-              <button 
-                onClick={toggleListening}
-                disabled={!isRecording}
-                className={`p-2 rounded-lg transition-all border disabled:opacity-50 ${
-                  isListening 
-                  ? 'bg-red-500 text-white border-red-400 animate-pulse' 
-                  : 'bg-slate-800 text-pink-400 border-slate-700'
-                }`}
-              >
-                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-              </button>
-              {!isListening && (
-                <button onClick={handleSendMessage} disabled={!isRecording || !inputText.trim()} className="p-2 bg-pink-400 text-slate-900 rounded-lg">
-                  <Send className="w-5 h-5" />
-                </button>
-              )}
-            </div>
+          <div 
+            className="overflow-y-auto p-4 space-y-4 scroll-smooth relative"
+            style={{ maxHeight: '200px', minHeight: '100px' }}
+          >
+            {messages.length === 0 && isConnected && (
+              <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
+                <Leaf className="w-12 h-12 mb-2" />
+                <p className="text-sm font-mono text-center">
+                  Touch plant to chat.
+                </p>
+              </div>
+            )}
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} relative z-10`}>
+                <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed ${
+                  msg.role === 'user' 
+                    ? 'bg-slate-700 border border-slate-600 text-white rounded-tr-none' 
+                    : 'bg-slate-800 border border-pink-400/20 text-slate-200 rounded-tl-none'
+                }`}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Plant Image - Below Chat Interface */}
+        {/* Plant Image - Centered, Always Visible */}
         <div 
-          className="flex flex-col items-center justify-center py-4 border-t border-slate-800"
+          className="flex flex-col items-center justify-center py-4 px-4"
           onClick={handleSimulatedTouch}
           onTouchStart={handleSimulatedTouch}
           style={{ cursor: 'pointer' }}
@@ -1285,6 +1255,39 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
             Simulated touch for demo
           </button>
         </div>
+
+        {/* Input Area - Only in TALK Mode, Below Plant */}
+        {interactionMode === 'TALK' && (
+          <div className="p-4 bg-slate-950/50 border-t border-slate-800">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder={isListening ? "Listening..." : "Type message..."}
+                disabled={!isRecording || isListening}
+                className="flex-1 bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none text-sm"
+              />
+              <button 
+                onClick={toggleListening}
+                disabled={!isRecording}
+                className={`p-2 rounded-lg transition-all border disabled:opacity-50 ${
+                  isListening 
+                  ? 'bg-red-500 text-white border-red-400 animate-pulse' 
+                  : 'bg-slate-800 text-pink-400 border-slate-700'
+                }`}
+              >
+                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </button>
+              {!isListening && (
+                <button onClick={handleSendMessage} disabled={!isRecording || !inputText.trim()} className="p-2 bg-pink-400 text-slate-900 rounded-lg">
+                  <Send className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Bio-Sonification Status - Bottom of Right Panel */}
         {interactionMode === 'MUSIC' && (
