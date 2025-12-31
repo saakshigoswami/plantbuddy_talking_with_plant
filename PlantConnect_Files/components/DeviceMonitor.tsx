@@ -1288,7 +1288,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
 
         {/* Bio-Sonification Status - Bottom of Right Panel */}
         {interactionMode === 'MUSIC' && (
-          <div className="p-4 bg-slate-950/50 border-t border-slate-800">
+          <div className="mt-auto p-4 bg-slate-950/50 border-t border-slate-800">
             <div className="flex flex-col items-center justify-center text-pink-400 font-mono text-xs gap-1 py-1">
               <div className="flex items-center gap-2">
                 <Music className="w-4 h-4" />
