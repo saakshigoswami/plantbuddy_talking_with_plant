@@ -14,9 +14,23 @@
 -- ============================================
 
 -- ============================================
+-- IMPORTANT: Topics vs Tables
+-- ============================================
+-- TOPICS: Where your data streams (Kafka topics)
+--   - plant_sensor_data (your main sensor data)
+--   - plant.health.insights (AI analysis results)
+--   - plant.health.alerts (critical alerts)
+--
+-- TABLES: Created FROM topics using ksqlDB queries
+--   - Tables aggregate/transform data from topics
+--   - You can query tables in the Confluent console
+--   - Tables update automatically as new data streams
+-- ============================================
+
+-- ============================================
 -- STEP 1: Create Stream from Sensor Data Topic
 -- ============================================
--- This creates a stream that reads from your Kafka topic
+-- This creates a stream that reads from your Kafka topic: plant_sensor_data
 
 CREATE OR REPLACE STREAM plant_sensor_stream (
     device_id VARCHAR,
@@ -45,7 +59,7 @@ CREATE OR REPLACE STREAM plant_sensor_stream (
         location VARCHAR
     >
 ) WITH (
-    KAFKA_TOPIC = 'plant-sensor-data',
+    KAFKA_TOPIC = 'plant_sensor_data',
     VALUE_FORMAT = 'JSON',
     TIMESTAMP = 'timestamp'
 );
@@ -55,6 +69,12 @@ CREATE OR REPLACE STREAM plant_sensor_stream (
 -- ============================================
 -- This table stores the most recent sensor reading for each device
 -- Perfect for dashboard queries and real-time monitoring
+
+-- ============================================
+-- STEP 2: Create MAIN TABLE - Latest Sensor Readings
+-- ============================================
+-- This is the MAIN TABLE you'll query in the console
+-- It shows the latest sensor reading for each device
 
 CREATE OR REPLACE TABLE plant_sensor_latest (
     device_id VARCHAR PRIMARY KEY,
@@ -69,7 +89,7 @@ CREATE OR REPLACE TABLE plant_sensor_latest (
     touch_events_last_min INT,
     location VARCHAR
 ) WITH (
-    KAFKA_TOPIC = 'plant-sensor-latest',
+    KAFKA_TOPIC = 'plant-sensor-latest-table',
     VALUE_FORMAT = 'JSON',
     PARTITIONS = 3
 );
@@ -94,6 +114,7 @@ GROUP BY device_id;
 -- ============================================
 -- STEP 3: Create Stream from Health Insights Topic
 -- ============================================
+-- Reads from your topic: plant.health.insights
 
 CREATE OR REPLACE STREAM plant_health_insights_stream (
     device_id VARCHAR,
@@ -118,7 +139,7 @@ CREATE OR REPLACE STREAM plant_health_insights_stream (
         humidity_status VARCHAR
     >
 ) WITH (
-    KAFKA_TOPIC = 'plant-health-insights',
+    KAFKA_TOPIC = 'plant.health.insights',
     VALUE_FORMAT = 'JSON',
     TIMESTAMP = 'timestamp'
 );
@@ -127,6 +148,7 @@ CREATE OR REPLACE STREAM plant_health_insights_stream (
 -- STEP 4: Create Table - Latest Health Score per Device
 -- ============================================
 -- This table stores the most recent health analysis for each device
+-- Created FROM topic: plant.health.insights
 
 CREATE OR REPLACE TABLE plant_health_latest (
     device_id VARCHAR PRIMARY KEY,
@@ -141,7 +163,7 @@ CREATE OR REPLACE TABLE plant_health_latest (
     avg_light_lux DOUBLE,
     avg_humidity_pct DOUBLE
 ) WITH (
-    KAFKA_TOPIC = 'plant-health-latest',
+    KAFKA_TOPIC = 'plant-health-latest-table',
     VALUE_FORMAT = 'JSON',
     PARTITIONS = 3
 );
