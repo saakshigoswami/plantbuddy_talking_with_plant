@@ -1230,7 +1230,7 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
 
         {/* Messages Area */}
         <div 
-          className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative"
+          className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth relative min-h-0"
         >
           {messages.length === 0 && isConnected && interactionMode === 'TALK' && (
             <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
