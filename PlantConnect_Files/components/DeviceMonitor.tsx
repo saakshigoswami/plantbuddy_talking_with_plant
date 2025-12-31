@@ -1222,10 +1222,6 @@ const DeviceMonitor: React.FC<DeviceMonitorProps> = ({ onSaveSession, onSessionD
           {isSimulatedTouching && (
             <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
           )}
-          {/* Visual feedback overlay when touching */}
-          {isSimulatedTouching && (
-            <div className="absolute inset-0 bg-pink-400/10 animate-pulse pointer-events-none z-0" />
-          )}
           
           {messages.length === 0 && isConnected && interactionMode === 'TALK' && (
             <div className="h-full flex flex-col items-center justify-center text-slate-600 opacity-50">
